@@ -1,9 +1,5 @@
 PMMail object for Postmark (http://postmarkapp.com)
 
-Version: ''' + __version__ + '''
-Author: ''' + __author__ + '''
-Date: ''' + __date__ + '''
-
 CHANGE LOG:
 
    Version 0.1.1:
