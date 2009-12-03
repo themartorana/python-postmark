@@ -125,7 +125,7 @@ class PMMail(object):
                 setattr(self, '_PMMail__%s' % key, kwargs[key])
                 
         # Set up the user-agent
-        self.__user_agent = 'Python/%s (Postmark PMMail Library version %s)' % ('_'.join([str(var) for var in sys.version_info]), __version__)
+        self.__user_agent = 'Python/%s (python-postmark library version %s)' % ('_'.join([str(var) for var in sys.version_info]), __version__)
         
         # Try to pull in the API key from Django
         try:
@@ -215,11 +215,9 @@ class PMMail(object):
         }
         
         if self.__html_body:
-            has_html = True
             json_message['HtmlBody'] = self.__html_body
             
         if self.__text_body:
-            has_text = True
             json_message['TextBody'] = self.__text_body
             
 #         if (self.__html_body and not self.__text_body) and self.__multipart:
