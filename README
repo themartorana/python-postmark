@@ -1,5 +1,11 @@
 PMMail object for Postmark (http://postmarkapp.com)
 
+PYTHON INFORMATION:
+   Works on Python 2.4 and better.  Versions
+   2.4 and 2.5 will require the "simplejson" 
+   library from http://code.google.com/p/simplejson/
+   Python 2.6 has JSON support built in.
+
 CHANGE LOG:
 
    Version 0.1.1:
