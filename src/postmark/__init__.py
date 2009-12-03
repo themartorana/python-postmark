@@ -79,7 +79,7 @@ except ImportError:
     try:
         import simplejson as json
     except ImportError:
-        raise Exception('Cannot use PMMail without Python 2.6 or greater, or Python 2.4 or 2.5 and the "simplejson" library')
+        raise Exception('Cannot use python-postmark library without Python 2.6 or greater, or Python 2.4 or 2.5 and the "simplejson" library')
 
 #
 #
