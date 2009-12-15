@@ -31,6 +31,7 @@ __doc__ = '''
         add the setting 
         
         POSTMARK_API_KEY = 'your-key'
+        POSTMARK_SENDER = '<From Name> from@emailaddress.com'
         
         to your settings.py file, and when you create a new PMMail object,
         it will grab the API key automatically.
@@ -133,6 +134,7 @@ class PMMail(object):
             from django.conf import settings as django_settings
             self.__api_key = django_settings.POSTMARK_API_KEY
             self.__user_agent = '%s (Django %s)' % (self.__user_agent, '_'.join([str(var) for var in django.VERSION]))
+            self.__sender = django_settings.POSTMARK_SENDER
         except ImportError:
             pass
         
