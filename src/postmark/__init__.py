@@ -1,8 +1,8 @@
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __author__  = "David Martorana (themartorana@yahoo.com)"
-__date__    = '2009-December-2'
+__date__    = '2010-January-01'
 __url__     = 'http://postmarkapp.com'
-__copyright__ = "(C) 2009 David Martorana, Wildbit LLC, Python Software Foundation."
+__copyright__ = "(C) 2009-2010 David Martorana, Wildbit LLC, Python Software Foundation."
 
 __doc__ = '''
 
@@ -14,8 +14,12 @@ __doc__ = '''
 
     CHANGE LOG:
 
-       Version 0.1.1:
-           Initial release
+        Version 0.1.2
+            - Added 'custom_headers' property (must be a dictionary) to PMMail object
+            - Added optional 'test' argument to send function to print JSON message instead of actually sending it
+            
+        Version 0.1.1:
+            - Initial release
 
     USEAGE:
         Make sure you have a Postmark account.  Visit
@@ -109,6 +113,7 @@ class PMMail(object):
         self.__subject = None
         self.__html_body = None
         self.__text_body = None
+        self.__custom_headers = None
         #self.__multipart = False
         
         acceptable_keys = (
@@ -118,6 +123,7 @@ class PMMail(object):
             'subject', 
             'html_body', 
             'text_body', 
+            'custom_headers',
             #'multipart'
         )
         
@@ -140,6 +146,17 @@ class PMMail(object):
         
     #
     # Properties
+    
+    def _set_custom_headers(self, value):
+        '''
+        A special set function to ensure 
+        we're setting with a dictionary
+        '''
+        if type(value) == dict:
+            setattr(self, '_PMMail__custom_headers', value)
+        else:
+            raise TypeError('Custom headers must be a dictionary of key-value pairs')
+    
     
     api_key = property(
         lambda self: self.__api_key,
@@ -180,11 +197,18 @@ class PMMail(object):
         'The email message body, in text format'
     )
     
+    custom_headers = property(
+        lambda self: self.__custom_headers,
+        _set_custom_headers, 
+        'The email message body, in text format'
+    )
+    
 #     multipart = property(
 #         lambda self: self.__multipart,
 #         lambda self, value: setattr(self, '_PMMail__multipart', value),
 #         'The API Key for one of your servers on Postmark'
 #     )
+        
     
     def _check_values(self):
         '''
@@ -203,9 +227,11 @@ class PMMail(object):
             raise PMMailMissingValueException('Cannot send an e-mail without either an HTML or text version of your e-mail body')
 
     
-    def send(self):
+    def send(self, test=False):
         '''
-        Send the email through the Postmark system
+        Send the email through the Postmark system.  
+        Pass test=True to just print out the resulting
+        JSON message being sent to Postmark
         '''
         self._check_values()
         
@@ -222,9 +248,25 @@ class PMMail(object):
         if self.__text_body:
             json_message['TextBody'] = self.__text_body
             
+        if self.__custom_headers:
+            custom_headers = []
+            for key in self.__custom_headers.keys():
+                custom_headers.append({
+                    'key': key,
+                    'value': self.__custom_headers[key]
+                })
+            if len(custom_headers) > 0:
+                json_message['Headers'] = custom_headers
+            
 #         if (self.__html_body and not self.__text_body) and self.__multipart:
 #             # TODO: Set up regex to strip html
 #             pass
+        
+        # If this is a test, just print the message
+        if test:
+            print 'JSON message is:\n%s' % json_message.__repr__()
+            return
+            
         
         # Set up the url Request
         req = urllib2.Request(
