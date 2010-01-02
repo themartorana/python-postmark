@@ -152,7 +152,7 @@ class PMMail(object):
         A special set function to ensure 
         we're setting with a dictionary
         '''
-        if type(value) == dict:
+        if value == None or type(value) == dict:
             setattr(self, '_PMMail__custom_headers', value)
         else:
             raise TypeError('Custom headers must be a dictionary of key-value pairs')
@@ -249,14 +249,14 @@ class PMMail(object):
             json_message['TextBody'] = self.__text_body
             
         if self.__custom_headers:
-            custom_headers = []
+            cust_headers = []
             for key in self.__custom_headers.keys():
-                custom_headers.append({
-                    'key': key,
-                    'value': self.__custom_headers[key]
+                cust_headers.append({
+                    'Name': key,
+                    'Value': self.__custom_headers[key]
                 })
-            if len(custom_headers) > 0:
-                json_message['Headers'] = custom_headers
+            if len(cust_headers) > 0:
+                json_message['Headers'] = cust_headers
             
 #         if (self.__html_body and not self.__text_body) and self.__multipart:
 #             # TODO: Set up regex to strip html
@@ -264,7 +264,7 @@ class PMMail(object):
         
         # If this is a test, just print the message
         if test:
-            print 'JSON message is:\n%s' % json_message.__repr__()
+            print 'JSON message is:\n%s' % json.dumps(json_message)
             return
             
         
