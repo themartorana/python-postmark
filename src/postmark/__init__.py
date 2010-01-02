@@ -14,6 +14,10 @@ __doc__ = '''
 
     CHANGE LOG:
 
+        Version 0.1.3
+            - Major fix to the way properties were being used, fixes doc strings in properties
+            - "custom_headers" is now always a dict, even if set to None
+
         Version 0.1.2
             - Added 'custom_headers' property (must be a dictionary) to PMMail object
             - Added optional 'test' argument to send function to print JSON message instead of actually sending it
@@ -105,6 +109,9 @@ class PMMail(object):
         subject:        Subject of the email
         html_body:      Email message in HTML
         text_body:      Email message in plain text
+        custom_headers: A dictionary of key-value pairs of custom headers.
+                        For example, use "Reply-To" header to change the reply to
+                        address of your message
         '''
         # initiate properties
         self.__api_key = None
@@ -113,7 +120,7 @@ class PMMail(object):
         self.__subject = None
         self.__html_body = None
         self.__text_body = None
-        self.__custom_headers = None
+        self.__custom_headers = {}
         #self.__multipart = False
         
         acceptable_keys = (
@@ -152,7 +159,9 @@ class PMMail(object):
         A special set function to ensure 
         we're setting with a dictionary
         '''
-        if value == None or type(value) == dict:
+        if value == None:
+            setattr(self, '_PMMail__custom_headers', {})
+        elif type(value) == dict:
             setattr(self, '_PMMail__custom_headers', value)
         else:
             raise TypeError('Custom headers must be a dictionary of key-value pairs')
@@ -161,46 +170,68 @@ class PMMail(object):
     api_key = property(
         lambda self: self.__api_key,
         lambda self, value: setattr(self, '_PMMail__api_key', value),
-        "The API Key for your server on Postmark"
+        lambda self: setattr(self, '_PMMail__api_key', None), 
+        '''
+        The API Key for your rack server on Postmark
+        '''
     )
 
     sender = property(
         lambda self: self.__sender,
         lambda self, value: setattr(self, '_PMMail__sender', value),
+        lambda self: setattr(self, '_PMMail__sender', None),
         '''
         The sender, in either "name@email.com" or "First Last <name@email.com>" formats.  
         The address should match one of your Sender Signatures in Postmark.
+        Specifying the address in the second fashion will allow you to replace
+        the name of the sender as it appears in the recipient's email client.
         '''
     )
          
     recipient = property(
         lambda self: self.__recipient,
         lambda self, value: setattr(self, '_PMMail__recipient', value),
-        'The recipient, in either "name@email.com" or "First Last <name@email.com>" formats'
+        lambda self: setattr(self, '_PMMail__recipient', None),
+        '''
+        The recipient, in either "name@email.com" or "First Last <name@email.com>" formats
+        '''
     )
 
     subject = property(
         lambda self: self.__subject,
         lambda self, value: setattr(self, '_PMMail__subject', value),
-        'The subject of your email message'
+        lambda self: setattr(self, '_PMMail__subject', None),
+        '''
+        The subject of your email message
+        '''
     )
     
     html_body = property(
         lambda self: self.__html_body,
         lambda self, value: setattr(self, '_PMMail__html_body', value),
-        'The email message body, in html format'
+        lambda self: setattr(self, '_PMMail__html_body', None),
+        '''
+        The email message body, in html format
+        '''
     )
     
     text_body = property(
         lambda self: self.__text_body,
         lambda self, value: setattr(self, '_PMMail__text_body', value),
-        'The email message body, in text format'
+        lambda self: setattr(self, '_PMMail__text_body', None),
+        '''
+        The email message body, in text format
+        '''
     )
     
     custom_headers = property(
         lambda self: self.__custom_headers,
         _set_custom_headers, 
-        'The email message body, in text format'
+        lambda self: setattr(self, '_PMMail__custom_headers', {}),
+        '''
+        The email message body, in text format
+        Reply-To: custom header will set a different reply-to address
+        '''
     )
     
 #     multipart = property(
@@ -248,15 +279,14 @@ class PMMail(object):
         if self.__text_body:
             json_message['TextBody'] = self.__text_body
             
-        if self.__custom_headers:
+        if len(self.__custom_headers) > 0:
             cust_headers = []
             for key in self.__custom_headers.keys():
                 cust_headers.append({
                     'Name': key,
                     'Value': self.__custom_headers[key]
                 })
-            if len(cust_headers) > 0:
-                json_message['Headers'] = cust_headers
+            json_message['Headers'] = cust_headers
             
 #         if (self.__html_body and not self.__text_body) and self.__multipart:
 #             # TODO: Set up regex to strip html
