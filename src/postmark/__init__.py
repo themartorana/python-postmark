@@ -1,5 +1,5 @@
 __version__ = '0.1.4'
-__author__  = "David Martorana (themartorana@yahoo.com)"
+__author__  = "David Martorana (http://davemartorana.com)"
 __date__    = '2010-January-01'
 __url__     = 'http://postmarkapp.com'
 __copyright__ = "(C) 2009-2010 David Martorana, Wildbit LLC, Python Software Foundation."
