@@ -13,6 +13,11 @@ __doc__ = '''
     Date: ''' + __date__ + '''
 
     CHANGE LOG:
+    
+        Version 0.1.4
+            - Added ".reply_to" property.  The "ReplyTo" custom header is unallowed by Postmark 
+              now, and their documentation has been updated to reflect the change.
+              http://developer.postmarkapp.com
 
         Version 0.1.3
             - Major fix to the way properties were being used, fixes doc strings in properties
@@ -110,12 +115,11 @@ class PMMail(object):
         html_body:      Email message in HTML
         text_body:      Email message in plain text
         custom_headers: A dictionary of key-value pairs of custom headers.
-                        For example, use "Reply-To" header to change the reply to
-                        address of your message
         '''
         # initiate properties
         self.__api_key = None
         self.__sender = None
+        self.__reply_to = None
         self.__recipient = None
         self.__subject = None
         self.__html_body = None
@@ -126,6 +130,7 @@ class PMMail(object):
         acceptable_keys = (
             'api_key', 
             'sender', 
+            'reply_to',
             'recipient', 
             'subject', 
             'html_body', 
@@ -187,7 +192,18 @@ class PMMail(object):
         the name of the sender as it appears in the recipient's email client.
         '''
     )
-         
+        
+    reply_to = property(
+        lambda self: self.__reply_to,
+        lambda self, value: setattr(self, '_PMMail__reply_to', value),
+        lambda self: setattr(self, '_PMMail__reply_to', None),
+        '''
+        A reply-to address, in either "name@email.com" or "First Last <name@email.com>" 
+        format. The reply-to address does not have to be one of your Sender Signatures in Postmark.
+        This allows a different reply-to address than sender address.
+        '''
+    )
+     
     recipient = property(
         lambda self: self.__recipient,
         lambda self, value: setattr(self, '_PMMail__recipient', value),
@@ -229,8 +245,9 @@ class PMMail(object):
         _set_custom_headers, 
         lambda self: setattr(self, '_PMMail__custom_headers', {}),
         '''
-        The email message body, in text format
-        Reply-To: custom header will set a different reply-to address
+        Custom headers in a standard dictionary. 
+        NOTE: To change the reply to address, use the .reply_to
+        property instead of a custom header.
         '''
     )
     
@@ -272,6 +289,9 @@ class PMMail(object):
             'To':       self.__recipient,
             'Subject':  self.__subject,
         }
+        
+        if self.__reply_to:
+            json_message['ReplyTo'] = self.__reply_to
         
         if self.__html_body:
             json_message['HtmlBody'] = self.__html_body

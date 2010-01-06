@@ -8,6 +8,11 @@ PYTHON INFORMATION:
 
 CHANGE LOG:
 
+    Version 0.1.4
+        - Added ".reply_to" property.  The "ReplyTo" custom header is unallowed by Postmark 
+          now, and their documentation has been updated to reflect the change.
+          http://developer.postmarkapp.com
+
     Version 0.1.3
         - Major fix to the way properties were being used, fixes doc strings in properties
         - "custom_headers" is now always a dict, even if set to None
