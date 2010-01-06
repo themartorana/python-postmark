@@ -1,4 +1,4 @@
-__version__ = '0.1.2'
+__version__ = '0.1.4'
 __author__  = "David Martorana (themartorana@yahoo.com)"
 __date__    = '2010-January-01'
 __url__     = 'http://postmarkapp.com'
