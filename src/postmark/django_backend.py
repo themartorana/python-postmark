@@ -37,8 +37,20 @@ class EmailBackend(BaseEmailBackend):
             return False            
         try:
             for recipient in message.recipients():
-                postmark_message = PMMail(api_key=self.api_key, 
-                                          # sender=self.default_sender,
+                if message.__class__.__name__ == 'EmailMultiAlternatives':
+                    for alt in message.alternatives:
+                    	if alt[1] == "text/html":
+                    		html_body=alt[0]
+                    		break
+                    postmark_message = PMMail(api_key=self.api_key, 
+                                          subject=message.subject,
+                                          sender=message.from_email,
+                                          recipient=recipient,
+                                          text_body=message.body,
+                                          html_body=html_body)
+
+                else:
+                    postmark_message = PMMail(api_key=self.api_key, 
                                           subject=message.subject,
                                           sender=message.from_email,
                                           recipient=recipient,
