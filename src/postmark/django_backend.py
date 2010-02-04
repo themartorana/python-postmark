@@ -42,7 +42,7 @@ class EmailBackend(BaseEmailBackend):
                                           subject=message.subject,
                                           sender=message.from_email,
                                           recipient=recipient,
-                                          text_body=message.message().as_string())
+                                          text_body=message.body)
                 postmark_message.send()
         except:
             if self.fail_silently:
