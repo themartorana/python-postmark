@@ -1,4 +1,4 @@
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 __author__  = "David Martorana (http://davemartorana.com)"
 __date__    = '2010-January-01'
 __url__     = 'http://postmarkapp.com'
@@ -35,6 +35,8 @@ class PMMail(object):
                         "name@email.com" or "First Last <name@email.com>" format
         recipient:      Who to send the email to, in either
                         "name@email.com" or "First Last <name@email.com>" format
+        cc:             Who to copy the email to, in either
+                        "name@email.com" or "First Last <name@email.com>" format
         subject:        Subject of the email
         html_body:      Email message in HTML
         text_body:      Email message in plain text
@@ -45,6 +47,7 @@ class PMMail(object):
         self.__sender = None
         self.__reply_to = None
         self.__recipient = None
+        self.__cc = None
         self.__subject = None
         self.__html_body = None
         self.__text_body = None
@@ -55,7 +58,8 @@ class PMMail(object):
             'api_key', 
             'sender', 
             'reply_to',
-            'recipient', 
+            'recipient',
+            'cc', 
             'subject', 
             'html_body', 
             'text_body', 
@@ -133,10 +137,19 @@ class PMMail(object):
         lambda self, value: setattr(self, '_PMMail__recipient', value),
         lambda self: setattr(self, '_PMMail__recipient', None),
         '''
-        The recipient, in either "name@email.com" or "First Last <name@email.com>" formats
+        The recipients, in either "name@email.com" or "First Last <name@email.com>" formats
         '''
     )
 
+    cc = property(
+        lambda self: self.__cc,
+        lambda self, value: setattr(self, '_PMMail__cc', value),
+        lambda self: setattr(self, '_PMMail__cc', None),
+        '''
+        The cc recipients, in either "name@email.com" or "First Last <name@email.com>" formats
+        '''
+    )
+    
     subject = property(
         lambda self: self.__subject,
         lambda self, value: setattr(self, '_PMMail__subject', value),
@@ -216,6 +229,9 @@ class PMMail(object):
         
         if self.__reply_to:
             json_message['ReplyTo'] = self.__reply_to
+        
+        if self.__cc:
+            json_message['Cc'] = self.__cc
         
         if self.__html_body:
             json_message['HtmlBody'] = self.__html_body
