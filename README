@@ -8,6 +8,11 @@ PYTHON INFORMATION:
 
 CHANGE LOG:
 
+    Version 0.1.5
+        - Added ".cc" property for carbon copy recipients. Changed django_backend to 
+          support multiple recipients, and to use "to" rather than "recipients" on the django
+          mail object to prevent accidental leakage of BCC recipients.
+          
     Version 0.1.4
         - Added ".reply_to" property.  The "ReplyTo" custom header is unallowed by Postmark 
           now, and their documentation has been updated to reflect the change.

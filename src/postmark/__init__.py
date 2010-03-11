@@ -1,4 +1,4 @@
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 __author__  = "David Martorana (http://davemartorana.com)"
 __date__    = '2010-January-01'
 __url__     = 'http://postmarkapp.com'
@@ -13,7 +13,11 @@ __doc__ = '''
     Date: ''' + __date__ + '''
 
     CHANGE LOG:
-    
+        Version 0.1.5
+            - Added ".cc" property for carbon copy recipients. Changed django_backend to 
+              support multiple recipients, and to use "to" rather than "recipients" on the django
+              mail object to prevent accidental leakage of BCC recipients.
+          
         Version 0.1.4
             - Added ".reply_to" property.  The "ReplyTo" custom header is unallowed by Postmark 
               now, and their documentation has been updated to reflect the change.
