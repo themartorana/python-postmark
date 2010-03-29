@@ -1,6 +1,6 @@
-__version__ = '0.1.5'
-__author__  = "David Martorana (http://davemartorana.com)"
-__date__    = '2010-January-01'
+__version__ = '0.1.6'
+__author__  = "David Martorana (http://davemartorana.com) & Richard Cooper (http://frozenskys.co.uk)"
+__date__    = '2010-March-29'
 __url__     = 'http://postmarkapp.com'
 __copyright__ = "(C) 2009-2010 David Martorana, Wildbit LLC, Python Software Foundation."
 
@@ -21,8 +21,202 @@ except ImportError:
 
 #
 #
-__POSTMARK_URL__ = 'http://api.postmarkapp.com/email'
+__POSTMARK_URL__ = 'http://api.postmarkapp.com/'
 
+class PMBounceManager(object):
+    '''
+    The Postmark Bounce object.
+    '''
+    def __init__(self, **kwargs):
+        '''
+        Keyword arguments are:
+        api_key:        Your Postmark server API key
+        '''
+        # initialize properties
+        self.__api_key = None
+        
+        
+        acceptable_keys = (
+            'api_key', 
+        )
+
+        for key in kwargs:
+            if key in acceptable_keys:
+                setattr(self, '_PMBounceManager__%s' % key, kwargs[key])
+                
+        # Set up the user-agent
+        self.__user_agent = 'Python/%s (python-postmark library version %s)' % ('_'.join([str(var) for var in sys.version_info]), __version__)
+        
+        # Try to pull in the API key from Django
+        try:
+            from django import VERSION
+            from django.conf import settings as django_settings
+            self.__api_key = django_settings.POSTMARK_API_KEY
+            self.__user_agent = '%s (Django %s)' % (self.__user_agent, '_'.join([str(var) for var in VERSION]))
+            self.__sender = django_settings.POSTMARK_SENDER
+        except ImportError:
+            pass
+            
+    def _check_values(self):
+        '''
+        Make sure all values are of the appropriate
+        type and are not missing.
+        '''
+        if not self.__api_key:
+            raise PMMailMissingValueException('Cannot check bounces without a Postmark Server API Key')      
+
+    api_key = property(
+        lambda self: self.__api_key,
+        lambda self, value: setattr(self, '_PMMail__api_key', value),
+        lambda self: setattr(self, '_PMMail__api_key', None), 
+        '''
+        The API Key for your rack server on Postmark
+        '''
+    )       
+    
+    def delivery_stats(self):
+        '''
+        Returns a summary of inactive emails and bounces by type.
+        '''
+        self._check_values()
+        
+        req = urllib2.Request(
+            __POSTMARK_URL__ + 'deliverystats',
+            None,
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Postmark-Server-Token': self.__api_key,
+                'User-agent': self.__user_agent
+            }
+        )
+        
+        # Attempt send
+        try:
+            print 'sending request to postmark:'
+            result = urllib2.urlopen(req)
+            if result.code == 200:
+                return json.loads(result.read())
+                result.close()
+            else:
+            	result.close()
+                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+            
+        except urllib2.HTTPError, err:
+            return err
+                            
+                            
+    def get_all(self, inactive='', email_filter='', tag='', count=25, offset=0):
+    	'''
+        Fetches a portion of bounces according to the specified input criteria. The count and offset 
+        parameters are mandatory. You should never retrieve all bounces as that could be excessively 
+        slow for your application. To know how many bounces you have, you need to request a portion 
+        first, usually the first page, and the service will return the count in the TotalCount property 
+        of the response.
+        '''
+        
+        self._check_values()
+        
+        params = '?inactive=' + inactive + '&emailFilter=' + email_filter +'&tag=' + tag 
+        params += '&count=' + str(count) + '&offset=' + str(offset)
+        
+        req = urllib2.Request(  	
+            __POSTMARK_URL__ + 'bounces' + params,
+            None,
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Postmark-Server-Token': self.__api_key,
+                'User-agent': self.__user_agent
+            }
+        )
+        
+        # Attempt send
+        try:
+            print 'sending request to postmark:'
+            result = urllib2.urlopen(req)
+            if result.code == 200:
+                return json.loads(result.read())
+                result.close()
+            else:
+            	result.close()
+                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+            
+        except urllib2.HTTPError, err:
+            return err
+        
+        
+    def get_single(self, bounce_id):
+    	'''
+    	Get details about a single bounce. Note that the bounce ID is a numeric value that you 
+    	typically obtain after a getting a list of bounces.
+    	'''
+        self._check_values()
+        
+        req = urllib2.Request(
+            __POSTMARK_URL__ + '/bounces/' + str(bounce_id),
+            None,
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Postmark-Server-Token': self.__api_key,
+                'User-agent': self.__user_agent
+            }
+        )
+        
+        # Attempt send
+        try:
+            print 'sending request to postmark:'
+            result = urllib2.urlopen(req)
+            if result.code == 200:
+                return json.loads(result.read())
+                result.close()
+            else:
+            	result.close()
+                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+            
+        except urllib2.HTTPError, err:
+            return err
+    
+    
+    def get_dump(self, bounce_id):
+        pass
+        
+    def get_tags(self):
+        '''
+    	Returns a list of tags used for the current server.
+    	'''
+        self._check_values()
+        
+        req = urllib2.Request(
+            __POSTMARK_URL__ + '/bounces/tags',
+            None,
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Postmark-Server-Token': self.__api_key,
+                'User-agent': self.__user_agent
+            }
+        )
+        
+        # Attempt send
+        try:
+            print 'sending request to postmark:'
+            result = urllib2.urlopen(req)
+            if result.code == 200:
+                return json.loads(result.read())
+                result.close()
+            else:
+            	result.close()
+                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+            
+        except urllib2.HTTPError, err:
+            return err
+        
+    def activate(self, bounce_id):
+        pass
+        
+    
 class PMMail(object):
     '''
     The Postmark Mail object.
@@ -201,7 +395,7 @@ class PMMail(object):
         type and are not missing.
         '''
         if not self.__api_key:
-            raise PMMailMissingValueException('Cannot send an e-mail without an Postmark API Key')
+            raise PMMailMissingValueException('Cannot send an e-mail without a Postmark API Key')
         elif not self.__sender:
             raise PMMailMissingValueException('Cannot send an e-mail without a sender')
         elif not self.__recipient:

@@ -1,6 +1,6 @@
-__version__ = '0.1.5'
-__author__  = "David Martorana (http://davemartorana.com)"
-__date__    = '2010-January-01'
+__version__ = '0.1.6'
+__author__  = "David Martorana (http://davemartorana.com) & Richard Cooper (http://frozenskys.com)"
+__date__    = '2010-March-29'
 __url__     = 'http://postmarkapp.com'
 __copyright__ = "(C) 2009-2010 David Martorana, Wildbit LLC, Python Software Foundation."
 
@@ -13,6 +13,9 @@ __doc__ = '''
     Date: ''' + __date__ + '''
 
     CHANGE LOG:
+    	Version 0.1.6
+    		- Added support for Bounces API
+    		
         Version 0.1.5
             - Added ".cc" property for carbon copy recipients. Changed django_backend to 
               support multiple recipients, and to use "to" rather than "recipients" on the django
@@ -39,9 +42,13 @@ __doc__ = '''
         http://postmarkapp.com to sign up for an account.
         Requires a Postmark API key.
     
-        Import postmark.PMMail to use Postmark.  Check
-        class documentation on PMMail object for more 
-        information.
+        Import postmark.PMMail to use Postmark Sending. 
+        Check class documentation on PMMail object for 
+        more information.
+        
+        Import postmark.PMBounceManager to use Postmark Bounce API. 
+        Check class documentation on PMBounceManager object for 
+        more information.
         
     DJANGO:
         The library can be used stand-alone with Django.  You can also
