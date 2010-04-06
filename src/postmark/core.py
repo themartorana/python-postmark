@@ -10,6 +10,7 @@ __copyright__ = "(C) 2009-2010 David Martorana, Wildbit LLC, Python Software Fou
 import sys
 import urllib
 import urllib2
+import httplib
 
 try:
     import json                     
@@ -180,7 +181,39 @@ class PMBounceManager(object):
     
     
     def get_dump(self, bounce_id):
-        pass
+        '''
+    	Returns the raw source of the bounce Postmark accepted. If Postmark does not have a dump for 
+        that bounce, it will return an empty string.
+    	'''
+        self._check_values()
+
+        req_url = __POSTMARK_URL__ + '/bounces/' + str(bounce_id) + '/dump'
+	print req_url
+        
+        req = urllib2.Request(
+	    req_url,
+            None,
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Postmark-Server-Token': self.__api_key,
+                'User-agent': self.__user_agent
+            }
+        )
+        
+        # Attempt send
+        try:
+            print 'sending request to postmark:'
+            result = urllib2.urlopen(req)
+            if result.code == 200:
+                return json.loads(result.read())
+                result.close()
+            else:
+            	result.close()
+                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+            
+        except urllib2.HTTPError, err:
+            return err
         
     def get_tags(self):
         '''
@@ -189,7 +222,7 @@ class PMBounceManager(object):
         self._check_values()
         
         req = urllib2.Request(
-            __POSTMARK_URL__ + '/bounces/tags',
+            __POSTMARK_URL__ + 'bounces/tags',
             None,
             {
                 'Accept': 'application/json',
@@ -214,7 +247,26 @@ class PMBounceManager(object):
             return err
         
     def activate(self, bounce_id):
-        pass
+        '''
+    	Activates a deactivated bounce.
+    	'''
+        self._check_values()
+        req_url = '/bounces/' + str(bounce_id) + '/activate'
+        print req_url
+	h1 = httplib.HTTPConnection('api.postmarkapp.com')
+        dta = urllib.urlencode({"data":"blank"})
+	req = h1.request('PUT',
+	    req_url,
+            dta,
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Postmark-Server-Token': self.__api_key,
+                'User-agent': self.__user_agent
+            }
+        )
+	r=h1.getresponse()
+	return json.loads(r.read())
         
     
 class PMMail(object):
