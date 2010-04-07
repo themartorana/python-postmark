@@ -1,4 +1,4 @@
-PMMail object for Postmark (http://postmarkapp.com)
+PMMail and PMBounceManager objects for Postmark (http://postmarkapp.com)
 
 PYTHON INFORMATION:
     Works on Python 2.4 and better.  Versions
@@ -7,7 +7,10 @@ PYTHON INFORMATION:
     Python 2.6 has JSON support built in.
 
 CHANGE LOG:
-
+    Version 0.1.6
+        - Added a new PMBounceManager Class that allows easy access to the PostMark
+          bounce API.
+        
     Version 0.1.5
         - Added ".cc" property for carbon copy recipients. Changed django_backend to 
           support multiple recipients, and to use "to" rather than "recipients" on the django
@@ -29,7 +32,7 @@ CHANGE LOG:
     Version 0.1.1:
         - Initial release
 
-USEAGE:
+USAGE:
     Make sure you have a Postmark account.  Visit
     http://postmarkapp.com to sign up for an account.
     Requires a Postmark API key.
@@ -81,3 +84,5 @@ EXCEPTIONS:
 TODO: 
     Add automatic multipart emails via regex stripping of HTML tags from html_body
     if the .multipart property is set to True
+    Refactor PMBounceManager Object and improve error handling within it.
+    Add PMBounceManager example to the Django test.
