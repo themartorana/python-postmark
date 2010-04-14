@@ -62,7 +62,7 @@ class PMMail(object):
         
         acceptable_keys = (
             'api_key', 
-            'from', 
+            'sender', 
             'reply_to',
             'to', 'recipient', # 'recipient' is legacy
             'cc', 
@@ -90,10 +90,7 @@ class PMMail(object):
             from django.conf import settings as django_settings
             self.__api_key = django_settings.POSTMARK_API_KEY
             self.__user_agent = '%s (Django %s)' % (self.__user_agent, '_'.join([str(var) for var in VERSION]))
-            
-            # Allow either POSTMARK_SENDER or POSTMARK_FROM
-            self.__sender = getattr(django_settings, 'POSTMARK_SENDER', None)
-            self.__sender = getattr(django_settings, 'POSTMARK_FROM', None)
+            self.__sender = django_settings.POSTMARK_SENDER
         except ImportError:
             pass
         
