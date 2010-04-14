@@ -1,8 +1,9 @@
-__version__ = '0.1.6'
-__author__  = "David Martorana (http://davemartorana.com) & Richard Cooper (http://frozenskys.com)"
-__date__    = '2010-March-29'
-__url__     = 'http://postmarkapp.com'
-__copyright__ = "(C) 2009-2010 David Martorana, Wildbit LLC, Python Software Foundation."
+__version__         = '0.2.0'
+__author__          = "Dave Martorana (http://davemartorana.com) & Richard Cooper (http://frozenskys.com)"
+__date__            = '2010-April-14'
+__url__             = 'http://postmarkapp.com'
+__copyright__       = "(C) 2009-2010 David Martorana, Wildbit LLC, Python Software Foundation."
+__contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), Richard Cooper (frozenskys)"
 
 __doc__ = '''
 
@@ -10,9 +11,18 @@ __doc__ = '''
 
     Version: ''' + __version__ + '''
     Author: ''' + __author__ + '''
-    Date: ''' + __date__ + '''
+    Last Updated: ''' + __date__ + '''
+    Contributors: ''' + __contributors__ + '''
 
     CHANGE LOG:
+        Version 0.2.0
+            - Merged with frozenskys/master to bring in PMBounceManager
+            - Support for multiple to/cc (limit: 20 per)
+            - Changed .recipient to .to (legacy support for .recipient left in)
+            - Tag support (.tag) added
+            - Fixed the email endpoint
+            - Fixed a Django backend issue for multiple recipients (max 20)
+    
     	Version 0.1.6
     		- Added support for Bounces API
     		

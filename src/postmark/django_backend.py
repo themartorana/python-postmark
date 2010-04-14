@@ -36,7 +36,7 @@ class EmailBackend(BaseEmailBackend):
         if not message.recipients():
             return False            
         try:
-            recipients = ''.join(message.to)
+            recipients = ','.join(message.to)
             if message.__class__.__name__ == 'EmailMultiAlternatives':
                 for alt in message.alternatives:
                     if alt[1] == "text/html":
@@ -45,7 +45,7 @@ class EmailBackend(BaseEmailBackend):
                 postmark_message = PMMail(api_key=self.api_key, 
                                       subject=message.subject,
                                       sender=message.from_email,
-                                      recipient=recipients,
+                                      to=recipients,
                                       text_body=message.body,
                                       html_body=html_body)
 
@@ -53,7 +53,7 @@ class EmailBackend(BaseEmailBackend):
                 postmark_message = PMMail(api_key=self.api_key, 
                                       subject=message.subject,
                                       sender=message.from_email,
-                                      recipient=recipients,
+                                      to=recipients,
                                       text_body=message.body)
             postmark_message.send()
         except:
