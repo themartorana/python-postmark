@@ -7,6 +7,14 @@ PYTHON INFORMATION:
     Python 2.6 has JSON support built in.
 
 CHANGE LOG:
+    Version 0.2.0
+        - Merged with frozenskys/master to bring in PMBounceManager
+        - Support for multiple to/cc (limit: 20 per)
+        - Changed .recipient to .to (legacy support for .recipient left in)
+        - Tag support (.tag) added
+        - Fixed the email endpoint
+        - Fixed a Django backend issue for multiple recipients (max 20)
+
     Version 0.1.6
         - Added a new PMBounceManager Class that allows easy access to the PostMark
           bounce API.
