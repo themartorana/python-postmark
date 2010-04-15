@@ -38,6 +38,7 @@ class EmailBackend(BaseEmailBackend):
         try:
             recipients = ','.join(message.to)
             if message.__class__.__name__ == 'EmailMultiAlternatives':
+                html_body = None
                 for alt in message.alternatives:
                     if alt[1] == "text/html":
                         html_body=alt[0]
