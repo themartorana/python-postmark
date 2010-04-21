@@ -37,25 +37,31 @@ class EmailBackend(BaseEmailBackend):
             return False            
         try:
             recipients = ','.join(message.to)
+            
+            html_body = None
             if message.__class__.__name__ == 'EmailMultiAlternatives':
-                html_body = None
                 for alt in message.alternatives:
                     if alt[1] == "text/html":
                         html_body=alt[0]
                         break
-                postmark_message = PMMail(api_key=self.api_key, 
-                                      subject=message.subject,
-                                      sender=message.from_email,
-                                      to=recipients,
-                                      text_body=message.body,
-                                      html_body=html_body)
+            
+            reply_to = None
+            custom_headers = {}           
+            if message.extra_headers and isinstance(message.extra_headers, dict):
+                if message.extra_headers.has_key('Reply-To'):
+                    reply_to = message.extra_headers.pop('Reply-To')
+                if len(message.extra_headers):
+                    custom_headers = message.extra_headers
+            
+            postmark_message = PMMail(api_key=self.api_key, 
+                                  subject=message.subject,
+                                  sender=message.from_email,
+                                  to=recipients,
+                                  text_body=message.body,
+                                  html_body=html_body,
+                                  reply_to=reply_to,
+                                  custom_headers=custom_headers)
 
-            else:
-                postmark_message = PMMail(api_key=self.api_key, 
-                                      subject=message.subject,
-                                      sender=message.from_email,
-                                      to=recipients,
-                                      text_body=message.body)
             postmark_message.send()
         except:
             if self.fail_silently:
