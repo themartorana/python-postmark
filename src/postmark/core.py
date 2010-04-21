@@ -90,7 +90,8 @@ class PMMail(object):
             from django.conf import settings as django_settings
             self.__api_key = django_settings.POSTMARK_API_KEY
             self.__user_agent = '%s (Django %s)' % (self.__user_agent, '_'.join([str(var) for var in VERSION]))
-            self.__sender = django_settings.POSTMARK_SENDER
+            if not self.__sender:
+                self.__sender = django_settings.POSTMARK_SENDER
         except ImportError:
             pass
         
