@@ -63,6 +63,14 @@ DJANGO:
     changing the format from 'email@address.com' to 
     'Sender Name <email@address.com>' as long as the email part is 
     part of a Sender Signature in Postmark
+
+    To reoute all Django E-Mail functions like send_mail() and
+    mail_admins() through postmark use the following setting:
+
+    EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
+
+    But keep in mind that even when using standard Django functions
+    the sender must be registered with postmarkapp.com.
     
 
 EXCEPTIONS:
