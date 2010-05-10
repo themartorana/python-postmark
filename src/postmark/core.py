@@ -41,6 +41,9 @@ class PMMail(object):
         cc:             Who to copy the email to, in either
                         "name@email.com" or "First Last <name@email.com>" format
                         Can be multiple values separated by commas (limit 20)
+        bcc:            Who to blind copy the email to, in either
+                        "name@email.com" or "First Last <name@email.com>" format
+                        Can be multiple values separated by commas (limit 20)
         subject:        Subject of the email
         tag:            Use for adding categorizations to your email
         html_body:      Email message in HTML
@@ -53,6 +56,7 @@ class PMMail(object):
         self.__reply_to = None
         self.__to = None
         self.__cc = None
+        self.__bcc = None
         self.__subject = None
         self.__tag = None
         self.__html_body = None
@@ -65,7 +69,8 @@ class PMMail(object):
             'sender', 
             'reply_to',
             'to', 'recipient', # 'recipient' is legacy
-            'cc', 
+            'cc',
+            'bcc', 
             'subject', 
             'tag',
             'html_body', 
@@ -162,6 +167,15 @@ class PMMail(object):
         '''
     )
     
+    bcc = property(
+        lambda self: self.__bcc,
+        lambda self, value: setattr(self, '_PMMail__bcc', value),
+        lambda self: setattr(self, '_PMMail__bcc', None),
+        '''
+        The bcc recipients, in either "name@email.com" or "First Last <name@email.com>" formats
+        '''
+    )
+    
     subject = property(
         lambda self: self.__subject,
         lambda self, value: setattr(self, '_PMMail__subject', value),
@@ -239,7 +253,6 @@ class PMMail(object):
     #
     #####################
 
-
     
     def _check_values(self):
         '''
@@ -278,6 +291,10 @@ class PMMail(object):
         
         if self.__cc:
             json_message['Cc'] = self.__cc
+
+        if self.__bcc:
+            json_message['Bcc'] = self.__bcc
+
 
         if self.__tag:
             json_message['Tag'] = self.__tag
