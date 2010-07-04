@@ -23,7 +23,7 @@ except ImportError:
 
 #
 #
-__POSTMARK_URL__ = 'http://api.postmarkapp.com/email'
+__POSTMARK_URL__ = 'http://api.postmarkapp.com/'
 
 class PMMail(object):
     '''
@@ -326,7 +326,7 @@ class PMMail(object):
         
         # Set up the url Request
         req = urllib2.Request(
-            __POSTMARK_URL__,
+            __POSTMARK_URL__ + 'email',
             json.dumps(json_message),
             {
                 'Accept': 'application/json',
