@@ -347,12 +347,13 @@ class PMMail(object):
                             "Content": attachment[1],
                             "ContentType": attachment[2],
                             })
-                elif isinstance(attachment, email.MIMEBase.MIMEBase):
+                elif isinstance(attachment, email.mime.base.MIMEBase):
                     attachments.append({
                             "Name": attachment.get_filename(),
-                            "Content": attacment.get_payload(),
+                            "Content": attachment.get_payload(),
                             "ContentType": attachment.get_content_type(),
                             })
+            json_message['Attachments'] = attachments
             
 #         if (self.__html_body and not self.__text_body) and self.__multipart:
 #             # TODO: Set up regex to strip html
