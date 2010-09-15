@@ -8,7 +8,7 @@ __contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), R
 #
 # Imports (JSON library based on import try)
 
-import email
+import email.mime.base
 import sys
 import urllib
 import urllib2
@@ -50,7 +50,8 @@ class PMMail(object):
         html_body:      Email message in HTML
         text_body:      Email message in plain text
         custom_headers: A dictionary of key-value pairs of custom headers.
-        attachments:    A list of dictionaries describing attachments.
+        attachments:    A list of tuples or email.mime.base.MIMEBase objects
+                        describing attachments.
         '''
         # initialize properties
         self.__api_key = None
