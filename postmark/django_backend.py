@@ -55,6 +55,11 @@ class EmailBackend(BaseEmailBackend):
                     reply_to = message.extra_headers.pop('Reply-To')
                 if len(message.extra_headers):
                     custom_headers = message.extra_headers
+            attachments = []
+            if message.attachments and isinstance(message.attachments, list):
+                if len(message.attachments):
+                    attachments = message.attachments
+
             postmark_message = PMMail(api_key=self.api_key,
                                   subject=message.subject,
                                   sender=message.from_email,
@@ -63,7 +68,8 @@ class EmailBackend(BaseEmailBackend):
                                   text_body=message.body,
                                   html_body=html_body,
                                   reply_to=reply_to,
-                                  custom_headers=custom_headers)
+                                  custom_headers=custom_headers,
+                                  attachments=attachments)
 
             postmark_message.send()
         except:

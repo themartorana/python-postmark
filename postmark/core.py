@@ -8,6 +8,7 @@ __contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), R
 #
 # Imports (JSON library based on import try)
 
+import email
 import sys
 import urllib
 import urllib2
@@ -23,7 +24,7 @@ except ImportError:
 
 #
 #
-__POSTMARK_URL__ = 'http://api.postmarkapp.com/email'
+__POSTMARK_URL__ = 'http://api.postmarkapp.com/'
 
 class PMMail(object):
     '''
@@ -49,6 +50,7 @@ class PMMail(object):
         html_body:      Email message in HTML
         text_body:      Email message in plain text
         custom_headers: A dictionary of key-value pairs of custom headers.
+        attachments:    A list of dictionaries describing attachments.
         '''
         # initialize properties
         self.__api_key = None
@@ -62,6 +64,7 @@ class PMMail(object):
         self.__html_body = None
         self.__text_body = None
         self.__custom_headers = {}
+        self.__attachments = []
         #self.__multipart = False
         
         acceptable_keys = (
@@ -76,6 +79,7 @@ class PMMail(object):
             'html_body', 
             'text_body', 
             'custom_headers',
+            'attachments',
             #'multipart'
         )
         
@@ -114,7 +118,18 @@ class PMMail(object):
             setattr(self, '_PMMail__custom_headers', value)
         else:
             raise TypeError('Custom headers must be a dictionary of key-value pairs')
-    
+        
+    def _set_attachments(self, value):
+        '''
+        A special set function to ensure
+        we're setting with a list
+        '''
+        if value == None:
+            setattr(self, '_PMMail__attachments', [])
+        elif type(value) == list:
+            setattr(self, '_PMMail__attachments', value)
+        else:
+            raise TypeError('Attachments must be a list')
     
     api_key = property(
         lambda self: self.__api_key,
@@ -224,6 +239,15 @@ class PMMail(object):
         property instead of a custom header.
         '''
     )
+
+    attachments = property(
+        lambda self: self.__attachments,
+        _set_attachments,
+        lambda self: setattr(self, '_PMMail__attachments', []),
+        '''
+        Attachments, Base64 encoded, in a list.
+        '''
+        )
     
 #     multipart = property(
 #         lambda self: self.__multipart,
@@ -313,6 +337,23 @@ class PMMail(object):
                     'Value': self.__custom_headers[key]
                 })
             json_message['Headers'] = cust_headers
+
+        if len(self.__attachments) > 0:
+            attachments = []
+            for attachment in self.__attachments:
+                if type(attachment) is tuple:
+                    attachments.append({
+                            "Name": attachment[0],
+                            "Content": attachment[1],
+                            "ContentType": attachment[2],
+                            })
+                elif isinstance(attachment, email.mime.base.MIMEBase):
+                    attachments.append({
+                            "Name": attachment.get_filename(),
+                            "Content": attachment.get_payload(),
+                            "ContentType": attachment.get_content_type(),
+                            })
+            json_message['Attachments'] = attachments
             
 #         if (self.__html_body and not self.__text_body) and self.__multipart:
 #             # TODO: Set up regex to strip html
@@ -326,7 +367,7 @@ class PMMail(object):
         
         # Set up the url Request
         req = urllib2.Request(
-            __POSTMARK_URL__,
+            __POSTMARK_URL__ + 'email',
             json.dumps(json_message),
             {
                 'Accept': 'application/json',
