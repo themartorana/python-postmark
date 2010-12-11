@@ -15,6 +15,7 @@ class EmailBackend(BaseEmailBackend):
         if not self.api_key:
             raise ImproperlyConfigured('POSTMARK API key must be set in Django settings file or passed to backend constructor.')            
         self.default_sender = getattr(settings, 'POSTMARK_SENDER', default_sender)
+        self.test_mode = getattr(settings, 'POSTMARK_TEST_MODE', False) 
                                     
     def send_messages(self, email_messages):
         """
@@ -67,7 +68,7 @@ class EmailBackend(BaseEmailBackend):
                                   custom_headers=custom_headers,
                                   attachments=attachments)
 
-            postmark_message.send()
+            postmark_message.send(test=self.test_mode)
         except:
             if self.fail_silently:
                 return False
