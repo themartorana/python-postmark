@@ -1,5 +1,14 @@
 PMMail and PMBounceManager objects for Postmark (http://postmarkapp.com)
 
+CONTRIBUTORS:
+Dave Martorana (themartorana)
+Bill Jones (oraclebill)
+Richard Cooper (frozenskys)
+Miguel Araujo (maraujop)
+Patrick Lauber (digi604)
+Brian McFadden (brimcfadden)
+(Did I miss anyone?)
+
 PYTHON INFORMATION:
     Works on Python 2.4 and better.  Versions
     2.4 and 2.5 will require the "simplejson" 
@@ -7,8 +16,12 @@ PYTHON INFORMATION:
     Python 2.6 has JSON support built in.
 
 CHANGE LOG:
+    Version 0.2.2
+        - Merged in email mime import fix from brimcfadden
+        
     Version 0.2.1
         - Merged in POSTMARK_TEST_MODE Django setting from maraujop
+        
     Version 0.2.0
         - Merged with frozenskys/master to bring in PMBounceManager
         - Support for multiple to/cc (limit: 20 per)
