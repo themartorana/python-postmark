@@ -1,9 +1,9 @@
-__version__         = '0.2.0'
+__version__         = '0.2.1'
 __author__          = "Dave Martorana (http://davemartorana.com) & Richard Cooper (http://frozenskys.com)"
-__date__            = '2010-April-14'
+__date__            = '2011-January-31'
 __url__             = 'http://postmarkapp.com'
 __copyright__       = "(C) 2009-2010 David Martorana, Wildbit LLC, Python Software Foundation."
-__contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), Richard Cooper (frozenskys)"
+__contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), Richard Cooper (frozenskys), Miguel Araujo (maraujop)"
 
 __doc__ = '''
 
@@ -15,6 +15,8 @@ __doc__ = '''
     Contributors: ''' + __contributors__ + '''
 
     CHANGE LOG:
+        Version 0.2.1
+            - Merged in POSTMARK_TEST_MODE Django setting from maraujop
         Version 0.2.0
             - Merged with frozenskys/master to bring in PMBounceManager
             - Support for multiple to/cc (limit: 20 per)
@@ -70,6 +72,18 @@ __doc__ = '''
         to your settings.py file, and when you create a new PMMail object,
         it will grab the API key automatically.
         
+        Using POSTMARK_TEST_MODE=True will not actually send the email, but
+        instead dump the JSON packet that would be sent to Postmarkapp.com.
+        By default this setting is False, and if not specified, will 
+        be assumed to be False.
+        
+        To reoute all Django E-Mail functions like send_mail() and
+        mail_admins() through postmark use the following setting:
+
+        EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
+
+        But keep in mind that even when using standard Django functions
+        the sender must be registered with postmarkapp.com.
 
     EXCEPTIONS:
         PMMailMissingValueException(Exception):
