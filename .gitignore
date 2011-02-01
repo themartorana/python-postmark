@@ -7,3 +7,4 @@ dist/
 *.egg-info
 *.gz
 build/
+env/
