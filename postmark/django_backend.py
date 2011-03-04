@@ -57,7 +57,10 @@ class EmailBackend(BaseEmailBackend):
             if message.attachments and isinstance(message.attachments, list):
                 if len(message.attachments):
                     attachments = message.attachments
-            
+
+            if message.subject.__class__.__name__ ==  "__proxy__":
+                message.subject = unicode(message.subject)
+
             postmark_message = PMMail(api_key=self.api_key, 
                                   subject=message.subject,
                                   sender=message.from_email,
