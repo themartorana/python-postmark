@@ -1,9 +1,20 @@
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
 from django.core.exceptions import ImproperlyConfigured
+from django.core.mail import EmailMessage
 
 from core import PMMail
 
+class PMEmailMessage(EmailMessage):
+    def __init__(self, *args, **kwargs):
+        if 'tag' in kwargs:
+            self.tag = kwargs['tag']
+            del kwargs['tag']
+        else:
+            self.tag = None
+
+        super(PMEmailMessage, self).__init__(*args, **kwargs)
+        
 class EmailBackend(BaseEmailBackend):
     
     def __init__(self, api_key=None, default_sender=None, **kwargs):
@@ -67,7 +78,9 @@ class EmailBackend(BaseEmailBackend):
                                   reply_to=reply_to,
                                   custom_headers=custom_headers,
                                   attachments=attachments)
-
+            
+            postmark_message.tag = getattr(message, 'tag', None)
+            
             postmark_message.send(test=self.test_mode)
         except:
             if self.fail_silently:
