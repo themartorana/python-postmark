@@ -8,7 +8,11 @@ __contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), R
 #
 # Imports (JSON library based on import try)
 
-import email.mime.base
+try:
+    from email.mime.base import MIMEBase
+except ImportError, e:
+    from email import MIMEBase
+    
 import sys
 import urllib
 import urllib2
@@ -98,9 +102,10 @@ class PMMail(object):
         try:
             from django import VERSION
             from django.conf import settings as django_settings
-            self.__api_key = django_settings.POSTMARK_API_KEY
             self.__user_agent = '%s (Django %s)' % (self.__user_agent, '_'.join([str(var) for var in VERSION]))
-            if not self.__sender:
+            if not self.__api_key and hasattr(django_settings, 'POSTMARK_API_KEY'):
+                self.__api_key = django_settings.POSTMARK_API_KEY
+            if not self.__sender and hasattr(django_settings, 'POSTMARK_SENDER'):
                 self.__sender = django_settings.POSTMARK_SENDER
         except ImportError:
             pass
@@ -296,7 +301,7 @@ class PMMail(object):
             raise PMMailMissingValueException('Cannot send an e-mail without either an HTML or text version of your e-mail body')
 
     
-    def send(self, test=False):
+    def send(self, test=None):
         '''
         Send the email through the Postmark system.  
         Pass test=True to just print out the resulting
@@ -348,7 +353,7 @@ class PMMail(object):
                             "Content": attachment[1],
                             "ContentType": attachment[2],
                             })
-                elif isinstance(attachment, email.mime.base.MIMEBase):
+                elif isinstance(attachment, MIMEBase):
                     attachments.append({
                             "Name": attachment.get_filename(),
                             "Content": attachment.get_payload(),
@@ -359,6 +364,14 @@ class PMMail(object):
 #         if (self.__html_body and not self.__text_body) and self.__multipart:
 #             # TODO: Set up regex to strip html
 #             pass
+        
+        # If test is not specified, attempt to read the Django setting
+        if test is None:
+            try:
+                from django.conf import settings as django_settings
+                test = getattr(django_settings, "POSTMARK_TEST_MODE", None)
+            except ImportError:
+                pass
         
         # If this is a test, just print the message
         if test:
@@ -438,9 +451,9 @@ class PMBounceManager(object):
         try:
             from django import VERSION
             from django.conf import settings as django_settings
-            self.__api_key = django_settings.POSTMARK_API_KEY
+            if not self.__api_key and hasattr(django_settings, 'POSTMARK_API_KEY'):
+                self.__api_key = django_settings.POSTMARK_API_KEY
             self.__user_agent = '%s (Django %s)' % (self.__user_agent, '_'.join([str(var) for var in VERSION]))
-            self.__sender = django_settings.POSTMARK_SENDER
         except ImportError:
             pass
             
