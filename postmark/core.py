@@ -8,7 +8,11 @@ __contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), R
 #
 # Imports (JSON library based on import try)
 
-import email.mime.base
+try:
+    from email.mime.base import MIMEBase
+except ImportError, e:
+    from email import MIMEBase
+    
 import sys
 import urllib
 import urllib2
@@ -348,7 +352,7 @@ class PMMail(object):
                             "Content": attachment[1],
                             "ContentType": attachment[2],
                             })
-                elif isinstance(attachment, email.mime.base.MIMEBase):
+                elif isinstance(attachment, MIMEBase):
                     attachments.append({
                             "Name": attachment.get_filename(),
                             "Content": attachment.get_payload(),
