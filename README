@@ -1,4 +1,4 @@
-PMMail and PMBounceManager objects for Postmark (http://postmarkapp.com)
+PMMail and PMBounceManager objects, as well as Django email backend (postmark.django_backend.EmailBackend) for Postmark (http://postmarkapp.com)
 
 CONTRIBUTORS:
 Dave Martorana (themartorana)
@@ -7,6 +7,8 @@ Richard Cooper (frozenskys)
 Miguel Araujo (maraujop)
 Patrick Lauber (digi604)
 Brian McFadden (brimcfadden)
+Joel Ryan (joelryan2k)
+Ben Hodgson (benhodgson)
 (Did I miss anyone?)
 
 PYTHON INFORMATION:
@@ -16,6 +18,10 @@ PYTHON INFORMATION:
     Python 2.6 has JSON support built in.
 
 CHANGE LOG:
+    Version 0.2.3
+        - Merged in support for adding a tag through the Django backend (joelryan2k)
+        - Merged in support for POSTMARK_TEST_MODE overriding and beter settings defaults (benhodgson)
+
     Version 0.2.2
         - Merged in email mime import fix from brimcfadden
         

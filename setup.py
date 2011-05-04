@@ -7,7 +7,7 @@ long_description = open(readme).read()
 
 setup(
     name = "python-postmark",
-    version = "0.2.0",
+    version = "0.2.3",
     packages = find_packages(),
     
     author = "Dave Martorana & Richard Cooper",
