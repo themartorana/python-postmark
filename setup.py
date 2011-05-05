@@ -10,8 +10,8 @@ setup(
     version = "0.3.1",
     packages = find_packages(),
     
-    author = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)"
-    # license = 'BSD',
+    author = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)",
+    license = 'BSD',
     description = "Postmark library for Python 2.4 and greater.",
     long_description = long_description,
     url = "http://github.com/themartorana/python-postmark",
