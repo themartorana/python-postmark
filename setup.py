@@ -7,10 +7,10 @@ long_description = open(readme).read()
 
 setup(
     name = "python-postmark",
-    version = "0.2.3",
+    version = "0.3.1",
     packages = find_packages(),
     
-    author = "Dave Martorana & Richard Cooper",
+    author = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)"
     # license = 'BSD',
     description = "Postmark library for Python 2.4 and greater.",
     long_description = long_description,

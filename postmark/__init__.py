@@ -1,9 +1,9 @@
-__version__         = '0.2.3'
-__author__          = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones"
+__version__         = '0.3.1'
+__author__          = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)"
 __date__            = '2011-January-31'
 __url__             = 'http://postmarkapp.com'
 __copyright__       = "(C) 2009-2010 David Martorana, Wildbit LLC, Python Software Foundation."
-__contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), Richard Cooper (frozenskys), Miguel Araujo (maraujop), Patrick Lauber (digi604), Brian McFadden (brimcfadden), Joel Ryan (joelryan2k), Ben Hodgson (benhodgson)"
+__contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), Richard Cooper (frozenskys), Miguel Araujo (maraujop), Patrick Lauber (digi604), Brian McFadden (brimcfadden), Joel Ryan (joelryan2k), Ben Hodgson (benhodgson), Dmitry Golomidov (deeGraYve)"
 
 __doc__ = '''
 
@@ -22,6 +22,11 @@ __doc__ = '''
         Import postmark.PMMail to use Postmark Sending. 
         Check class documentation on PMMail object for 
         more information.
+
+        Import postmark.PMBatchMail object to send batches of 
+        messages. Either pass a "messages" argument or set 
+        the .messages property of the PMBatchMail object to an
+        array of PMMail objects.
         
         Import postmark.PMBounceManager to use Postmark Bounce API. 
         Check class documentation on PMBounceManager object for 

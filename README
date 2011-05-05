@@ -9,6 +9,7 @@ Patrick Lauber (digi604)
 Brian McFadden (brimcfadden)
 Joel Ryan (joelryan2k)
 Ben Hodgson (benhodgson)
+Dmitry Golomidov (deeGraYve)
 (Did I miss anyone?)
 
 PYTHON INFORMATION:
@@ -18,6 +19,10 @@ PYTHON INFORMATION:
     Python 2.6 has JSON support built in.
 
 CHANGE LOG:
+    Version 0.3.1
+        - Added batch-messaging support (PMBatchMail object) (deeGraYve)
+          See http://developer.postmarkapp.com/developer-build.html#batching-messages
+
     Version 0.2.3
         - Merged in support for adding a tag through the Django backend (joelryan2k)
         - Merged in support for POSTMARK_TEST_MODE overriding and beter settings defaults (benhodgson)
