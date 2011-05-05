@@ -300,25 +300,16 @@ class PMMail(object):
         elif not self.__html_body and not self.__text_body:
             raise PMMailMissingValueException('Cannot send an e-mail without either an HTML or text version of your e-mail body')
 
-    
-    def send(self, test=None):
-        '''
-        Send the email through the Postmark system.  
-        Pass test=True to just print out the resulting
-        JSON message being sent to Postmark
-        '''
-        self._check_values()
-        
-        # Set up message dictionary
+    def to_json_message(self):
         json_message = {
             'From':     self.__sender,
             'To':       self.__to,
             'Subject':  self.__subject,
         }
-        
+
         if self.__reply_to:
             json_message['ReplyTo'] = self.__reply_to
-        
+
         if self.__cc:
             json_message['Cc'] = self.__cc
 
@@ -328,13 +319,13 @@ class PMMail(object):
 
         if self.__tag:
             json_message['Tag'] = self.__tag
-        
+
         if self.__html_body:
             json_message['HtmlBody'] = self.__html_body
-            
+
         if self.__text_body:
             json_message['TextBody'] = self.__text_body
-            
+
         if len(self.__custom_headers) > 0:
             cust_headers = []
             for key in self.__custom_headers.keys():
@@ -360,6 +351,19 @@ class PMMail(object):
                             "ContentType": attachment.get_content_type(),
                             })
             json_message['Attachments'] = attachments
+
+        return json_message
+
+    def send(self, test=None):
+        '''
+        Send the email through the Postmark system.  
+        Pass test=True to just print out the resulting
+        JSON message being sent to Postmark
+        '''
+        self._check_values()
+        
+        # Set up message dictionary
+        json_message = self.to_json_message()
             
 #         if (self.__html_body and not self.__text_body) and self.__multipart:
 #             # TODO: Set up regex to strip html
@@ -421,7 +425,97 @@ class PMMail(object):
             else:
                 raise PMMailURLException('URLError: The server couldn\'t fufill the request. (See "inner_exception" for details)', err)
                 
-                
+
+class PMBatchMail(object):
+
+    def __init__(self, **kwargs):
+        self.__api_key = None
+        self.__sender = None
+        self.messages = []
+
+        acceptable_keys = (
+            'messages',
+        )
+
+        for key in kwargs:
+            if key in acceptable_keys:
+                setattr(self, key, kwargs[key])
+
+        # Set up the user-agent
+        self.__user_agent = 'Python/%s (python-postmark library version %s)' % ('_'.join([str(var) for var in sys.version_info]), __version__)
+
+        # Try to pull in the API key from Django
+        try:
+            from django import VERSION
+            from django.conf import settings as django_settings
+            self.__user_agent = '%s (Django %s)' % (self.__user_agent, '_'.join([str(var) for var in VERSION]))
+            if not self.__api_key and hasattr(django_settings, 'POSTMARK_API_KEY'):
+                self.__api_key = django_settings.POSTMARK_API_KEY
+            if not self.__sender and hasattr(django_settings, 'POSTMARK_SENDER'):
+                self.__sender = django_settings.POSTMARK_SENDER
+        except ImportError:
+            pass
+
+
+    def send(self, test=None):
+        json_message = []
+        for message in self.messages:
+            json_message.append(message.to_json_message())
+
+        req = urllib2.Request(
+            __POSTMARK_URL__ + 'email/batch',
+            json.dumps(json_message),
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Postmark-Server-Token': self.__api_key,
+                'User-agent': self.__user_agent
+            }
+        )
+
+        # If test is not specified, attempt to read the Django setting
+        if test is None:
+            try:
+                from django.conf import settings as django_settings
+                test = getattr(django_settings, "POSTMARK_TEST_MODE", None)
+            except ImportError:
+                pass
+
+        # If this is a test, just print the message
+        if test:
+            print 'JSON message is:\n%s' % json.dumps(json_message)
+            return
+
+        # Attempt send
+        try:
+            result = urllib2.urlopen(req)
+            result.close()
+            if result.code == 200:
+                return True
+            else:
+                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+        except urllib2.HTTPError, err:
+            if err.code == 401:
+                raise PMMailUnauthorizedException('Sending Unauthorized - incorrect API key.', err)
+            elif err.code == 422:
+                try:
+                    jsontxt = err.read()
+                    jsonobj = json.loads(jsontxt)
+                    desc = jsonobj['Message']
+                except:
+                    desc = 'Description not given'
+                raise PMMailUnprocessableEntityException('Unprocessable Entity: %s' % desc)
+            elif err.code == 500:
+                raise PMMailServerErrorException('Internal server error at Postmark. Admins have been alerted.', err)
+        except urllib2.URLError, err:
+            if hasattr(err, 'reason'):
+                raise PMMailURLException('URLError: Failed to reach the server: %s (See "inner_exception" for details)' % err.reason, err)
+            elif hasattr(err, 'code'):
+                raise PMMailURLException('URLError: %d: The server couldn\'t fufill the request. (See "inner_exception" for details)' % err.code, err)
+            else:
+                raise PMMailURLException('URLError: The server couldn\'t fufill the request. (See "inner_exception" for details)', err)
+
+
 
 class PMBounceManager(object):
     '''
