@@ -1,4 +1,4 @@
-PMMail and PMBounceManager objects, as well as Django email backend (postmark.django_backend.EmailBackend) for Postmark (http://postmarkapp.com)
+PMMail, PMBatchMail, and PMBounceManager objects, as well as Django email backend (postmark.django_backend.EmailBackend) for Postmark (http://postmarkapp.com)
 
 CONTRIBUTORS:
 Dave Martorana (themartorana)
