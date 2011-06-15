@@ -1,3 +1,5 @@
+import base64
+
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
 from django.core.exceptions import ImproperlyConfigured
@@ -77,7 +79,7 @@ class EmailBackend(BaseEmailBackend):
             attachments = []
             if message.attachments and isinstance(message.attachments, list):
                 if len(message.attachments):
-                    attachments = message.attachments
+                    attachments = [(f, base64.encodestring(content), m) for (f, content, m) in message.attachments]
             
             postmark_message = PMMail(api_key=self.api_key, 
                                   subject=message.subject,
