@@ -776,14 +776,13 @@ class PMBounceManager(object):
 #
 # Exceptions
 
-import smtplib
 class PMMailMissingValueException(Exception):
     def __init__(self, value):
         self.parameter = value
     def __str__(self):
         return repr(self.parameter)
 
-class PMMailSendException(smtplib.SMTPException):
+class PMMailSendException(Exception):
     '''
     Base Postmark send exception
     '''
@@ -793,13 +792,13 @@ class PMMailSendException(smtplib.SMTPException):
     def __str__(self):
         return repr(self.parameter)
 
-class PMMailUnauthorizedException(smtplib.SMTPAuthenticationError):
+class PMMailUnauthorizedException(PMMailSendException):
     '''
     401: Unathorized sending due to bad API key
     '''
     pass
 
-class PMMailUnprocessableEntityException(smtplib.SMTPRecipientsRefused):
+class PMMailUnprocessableEntityException(PMMailSendException):
     '''
     422: Unprocessable Entity - usually an exception with either the sender
     not having a matching Sender Signature in Postmark.  Read the message
