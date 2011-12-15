@@ -59,6 +59,7 @@ class EmailBackend(BaseEmailBackend):
             return False            
         try:
             recipients = ','.join(message.to)
+            recipients_bcc = ','.join(message.bcc)
             
             html_body = None
             if isinstance(message, EmailMultiAlternatives):
@@ -83,6 +84,7 @@ class EmailBackend(BaseEmailBackend):
                                   subject=message.subject,
                                   sender=message.from_email,
                                   to=recipients,
+                                  bcc=recipients_bcc,
                                   text_body=message.body,
                                   html_body=html_body,
                                   reply_to=reply_to,
