@@ -26,6 +26,18 @@ except ImportError:
     except ImportError:
         raise Exception('Cannot use python-postmark library without Python 2.6 or greater, or Python 2.4 or 2.5 and the "simplejson" library')
 
+class PMJSONEncoder(json.JSONEncoder):
+	def default(self, o):
+		try:
+			if hasattr(o, '_proxy____str_cast') and callable(o._proxy____str_cast):
+				return o._proxy____str_cast()
+			elif hasattr(o, '_proxy____unicode_cast'):
+				return unicode(o)
+		except:
+			pass
+			
+		return super(PMJSONEncoder, self).default(o)
+	
 #
 #
 __POSTMARK_URL__ = 'http://api.postmarkapp.com/'
@@ -379,14 +391,13 @@ class PMMail(object):
         
         # If this is a test, just print the message
         if test:
-            print 'JSON message is:\n%s' % json.dumps(json_message)
+            print 'JSON message is:\n%s' % json.dumps(json_message, cls=PMJSONEncoder)
             return
             
-        
         # Set up the url Request
         req = urllib2.Request(
             __POSTMARK_URL__ + 'email',
-            json.dumps(json_message),
+            json.dumps(json_message, cls=PMJSONEncoder),
             {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -464,7 +475,7 @@ class PMBatchMail(object):
 
         req = urllib2.Request(
             __POSTMARK_URL__ + 'email/batch',
-            json.dumps(json_message),
+            json.dumps(json_message, cls=PMJSONEncoder),
             {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -483,7 +494,7 @@ class PMBatchMail(object):
 
         # If this is a test, just print the message
         if test:
-            print 'JSON message is:\n%s' % json.dumps(json_message)
+            print 'JSON message is:\n%s' % json.dumps(json_message, cls=PMJSONEncoder)
             return
 
         # Attempt send

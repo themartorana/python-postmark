@@ -2,6 +2,7 @@
 from django import forms
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils.translation import ugettext_lazy 
 
 class EmailForm(forms.Form):
     
@@ -14,7 +15,7 @@ class EmailForm(forms.Form):
         """
         Build and send the email message.
         """
-        send_mail(subject=self.cleaned_data['subject'],
+        send_mail(subject=ugettext_lazy(self.cleaned_data['subject']),
                   message=self.cleaned_data['body'], 
                   from_email=self.cleaned_data['sender'],
                   recipient_list=[addr.strip() for addr in self.cleaned_data['to'].split(',')],
