@@ -32,8 +32,8 @@ class EmailBackend(BaseEmailBackend):
         Initialize the backend.
         """
         super(EmailBackend, self).__init__(**kwargs)
-        self.api_key = getattr(settings, 'POSTMARK_API_KEY', api_key)
-        if not self.api_key:
+        self.api_key = api_key if api_key is not None else getattr(settings, 'POSTMARK_API_KEY', None)
+        if self.api_key is None:
             raise ImproperlyConfigured('POSTMARK API key must be set in Django settings file or passed to backend constructor.')            
         self.default_sender = getattr(settings, 'POSTMARK_SENDER', default_sender)
         self.test_mode = getattr(settings, 'POSTMARK_TEST_MODE', False) 
