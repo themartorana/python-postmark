@@ -436,11 +436,14 @@ class PMMail(object):
             else:
                 raise PMMailURLException('URLError: The server couldn\'t fufill the request. (See "inner_exception" for details)', err)
 
-
+# Simple utility that returns a generator to chunk up a list into equal parts
 def _chunks(l, n):
     return (l[i:i+n] for i in range(0, len(l), n))
 
 class PMBatchMail(object):
+    # Maximum number of messages to be sent at once.
+    # Ref: http://developer.postmarkapp.com/developer-build.html#batching-messages
+    MAX_MESSAGES = 500
 
     def __init__(self, **kwargs):
         self.__api_key = None
@@ -479,7 +482,8 @@ class PMBatchMail(object):
                 test = getattr(django_settings, "POSTMARK_TEST_MODE", None)
             except ImportError:
                 pass
-        for messages in _chunks(self.messages, 500):
+        # Split up into groups of 500 messages for sending
+        for messages in _chunks(self.messages, PMBatchMail.MAX_MESSAGES):
             json_message = []
             for message in messages:
                 json_message.append(message.to_json_message())
