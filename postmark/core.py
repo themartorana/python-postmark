@@ -435,7 +435,10 @@ class PMMail(object):
                 raise PMMailURLException('URLError: %d: The server couldn\'t fufill the request. (See "inner_exception" for details)' % err.code, err)
             else:
                 raise PMMailURLException('URLError: The server couldn\'t fufill the request. (See "inner_exception" for details)', err)
-                
+
+
+def _chunks(l, n):
+    return (l[i:i+n] for i in range(0, len(l), n))
 
 class PMBatchMail(object):
 
@@ -469,21 +472,6 @@ class PMBatchMail(object):
 
 
     def send(self, test=None):
-        json_message = []
-        for message in self.messages:
-            json_message.append(message.to_json_message())
-
-        req = urllib2.Request(
-            __POSTMARK_URL__ + 'email/batch',
-            json.dumps(json_message, cls=PMJSONEncoder),
-            {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'X-Postmark-Server-Token': self.__api_key,
-                'User-agent': self.__user_agent
-            }
-        )
-
         # If test is not specified, attempt to read the Django setting
         if test is None:
             try:
@@ -491,40 +479,56 @@ class PMBatchMail(object):
                 test = getattr(django_settings, "POSTMARK_TEST_MODE", None)
             except ImportError:
                 pass
+        for messages in _chunks(self.messages, 500):
+            json_message = []
+            for message in messages:
+                json_message.append(message.to_json_message())
 
-        # If this is a test, just print the message
-        if test:
-            print 'JSON message is:\n%s' % json.dumps(json_message, cls=PMJSONEncoder)
-            return
+            req = urllib2.Request(
+                __POSTMARK_URL__ + 'email/batch',
+                json.dumps(json_message, cls=PMJSONEncoder),
+                {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Postmark-Server-Token': self.__api_key,
+                    'User-agent': self.__user_agent
+                }
+            )
 
-        # Attempt send
-        try:
-            result = urllib2.urlopen(req)
-            result.close()
-            if result.code == 200:
-                return True
-            else:
-                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
-        except urllib2.HTTPError, err:
-            if err.code == 401:
-                raise PMMailUnauthorizedException('Sending Unauthorized - incorrect API key.', err)
-            elif err.code == 422:
-                try:
-                    jsontxt = err.read()
-                    jsonobj = json.loads(jsontxt)
-                    desc = jsonobj['Message']
-                except:
-                    desc = 'Description not given'
-                raise PMMailUnprocessableEntityException('Unprocessable Entity: %s' % desc)
-            elif err.code == 500:
-                raise PMMailServerErrorException('Internal server error at Postmark. Admins have been alerted.', err)
-        except urllib2.URLError, err:
-            if hasattr(err, 'reason'):
-                raise PMMailURLException('URLError: Failed to reach the server: %s (See "inner_exception" for details)' % err.reason, err)
-            elif hasattr(err, 'code'):
-                raise PMMailURLException('URLError: %d: The server couldn\'t fufill the request. (See "inner_exception" for details)' % err.code, err)
-            else:
-                raise PMMailURLException('URLError: The server couldn\'t fufill the request. (See "inner_exception" for details)', err)
+            # If this is a test, just print the message
+            if test:
+                print 'JSON message is:\n%s' % json.dumps(json_message, cls=PMJSONEncoder)
+                continue
+
+            # Attempt send
+            try:
+                result = urllib2.urlopen(req)
+                result.close()
+                if result.code == 200:
+                    pass
+                else:
+                    raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+            except urllib2.HTTPError, err:
+                if err.code == 401:
+                    raise PMMailUnauthorizedException('Sending Unauthorized - incorrect API key.', err)
+                elif err.code == 422:
+                    try:
+                        jsontxt = err.read()
+                        jsonobj = json.loads(jsontxt)
+                        desc = jsonobj['Message']
+                    except:
+                        desc = 'Description not given'
+                    raise PMMailUnprocessableEntityException('Unprocessable Entity: %s' % desc)
+                elif err.code == 500:
+                    raise PMMailServerErrorException('Internal server error at Postmark. Admins have been alerted.', err)
+            except urllib2.URLError, err:
+                if hasattr(err, 'reason'):
+                    raise PMMailURLException('URLError: Failed to reach the server: %s (See "inner_exception" for details)' % err.reason, err)
+                elif hasattr(err, 'code'):
+                    raise PMMailURLException('URLError: %d: The server couldn\'t fufill the request. (See "inner_exception" for details)' % err.code, err)
+                else:
+                    raise PMMailURLException('URLError: The server couldn\'t fufill the request. (See "inner_exception" for details)', err)
+        return True
 
 
 
