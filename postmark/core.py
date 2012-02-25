@@ -40,7 +40,7 @@ class PMJSONEncoder(json.JSONEncoder):
 	
 #
 #
-__POSTMARK_URL__ = 'http://api.postmarkapp.com/'
+__POSTMARK_URL__ = 'https://api.postmarkapp.com/'
 
 class PMMail(object):
     '''
