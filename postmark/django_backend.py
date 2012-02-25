@@ -95,9 +95,18 @@ class EmailBackend(BaseEmailBackend):
         """A helper method that does the actual sending."""
         if len(messages) == 1:
             to_send = self._build_message(messages[0])
+            if to_send == False:
+                # The message was missing recipients.
+                # Bail.
+                return False
         else:
-            postmark_messages = map(self._build_message, messages)
-            to_send = PMBatchMail(messages=postmark_messages)
+            pm_messages = map(self._build_message, messages)
+            pm_messages = filter(lambda m: m != False, pm_messages)
+            if len(pm_messages) == 0:
+                # If after filtering, there aren't any messages
+                # to send, bail.
+                return False
+            to_send = PMBatchMail(messages=pm_messages)
         try:
             to_send.send(test=self.test_mode)
         except:
