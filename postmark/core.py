@@ -19,7 +19,7 @@ import urllib2
 import httplib
 
 try:
-    import json                     
+    import json
 except ImportError:
     try:
         import simplejson as json
@@ -27,17 +27,10 @@ except ImportError:
         raise Exception('Cannot use python-postmark library without Python 2.6 or greater, or Python 2.4 or 2.5 and the "simplejson" library')
 
 class PMJSONEncoder(json.JSONEncoder):
-	def default(self, o):
-		try:
-			if hasattr(o, '_proxy____str_cast') and callable(o._proxy____str_cast):
-				return o._proxy____str_cast()
-			elif hasattr(o, '_proxy____unicode_cast'):
-				return unicode(o)
-		except:
-			pass
-			
-		return super(PMJSONEncoder, self).default(o)
-	
+    def default(self, o):
+        if hasattr(o, '_proxy____unicode_cast'):
+            return unicode(o)
+        return super(PMJSONEncoder, self).default(o)
 #
 #
 __POSTMARK_URL__ = 'http://api.postmarkapp.com/'
