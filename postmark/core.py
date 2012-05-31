@@ -452,15 +452,17 @@ class PMBatchMail(object):
     def __init__(self, **kwargs):
         self.__api_key = None
         self.__sender = None
-        self.messages = []
+        self.__messages = []
 
         acceptable_keys = (
-            'messages',
+            'api_key',
+            'sender',
+            'messages'
         )
 
         for key in kwargs:
             if key in acceptable_keys:
-                setattr(self, key, kwargs[key])
+                setattr(self, '_PMBatchMail__%s' % key, kwargs[key])
 
         # Set up the user-agent
         self.__user_agent = 'Python/%s (python-postmark library version %s)' % ('_'.join([str(var) for var in sys.version_info]), __version__)
@@ -476,7 +478,36 @@ class PMBatchMail(object):
                 self.__sender = django_settings.POSTMARK_SENDER
         except ImportError:
             pass
+    
+    api_key = property(
+        lambda self: self.__api_key,
+        lambda self, value: setattr(self, '_PMMail__api_key', value),
+        lambda self: setattr(self, '_PMMail__api_key', None), 
+        '''
+        The API Key for your rack server on Postmark
+        '''
+    )
 
+    sender = property(
+        lambda self: self.__sender,
+        lambda self, value: setattr(self, '_PMMail__sender', value),
+        lambda self: setattr(self, '_PMMail__sender', None),
+        '''        
+        The sender, in either "name@email.com" or "First Last <name@email.com>" formats.  
+        The address should match one of your Sender Signatures in Postmark.
+        Specifying the address in the second fashion will allow you to replace
+        the name of the sender as it appears in the recipient's email client.
+        '''
+    )
+    
+    messages = property(
+        lambda self: self.__messages,
+        lambda self, value: setattr(self, '_PMMail__messages', value),
+        lambda self: setattr(self, '_PMMail__messages', None), 
+        '''
+        Messages to send
+        '''
+    )
 
     def send(self, test=None):
         # If test is not specified, attempt to read the Django setting
