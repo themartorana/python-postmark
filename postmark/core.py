@@ -19,12 +19,16 @@ import urllib2
 import httplib
 
 try:
-    import json                     
+    import simplejson as json
 except ImportError:
     try:
-        import simplejson as json
+        import json
     except ImportError:
-        raise Exception('Cannot use python-postmark library without Python 2.6 or greater, or Python 2.4 or 2.5 and the "simplejson" library')
+        try:
+            # Last ditch effort to try and grab it from Django if they're using Django
+            from django.utils import simplejson as json
+        except ImportError:
+            raise Exception('Cannot use python-postmark library without Python 2.6 or greater, or Python 2.4 or 2.5 and the "simplejson" library')
 
 class PMJSONEncoder(json.JSONEncoder):
 	def default(self, o):
