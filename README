@@ -12,6 +12,7 @@ Ben Hodgson (benhodgson)
 Dmitry Golomidov (deeGraYve)
 Matt Robenolt (mattrobenolt)
 Maxime Bouroumeau-Fuseau (maximebf)
+James Arthur (thruflo)
 (Did I miss anyone?)
 
 PYTHON INFORMATION:
@@ -21,6 +22,17 @@ PYTHON INFORMATION:
     Python 2.6 has JSON support built in.
 
 CHANGE LOG:
+    Version 0.3.2
+        - Uses simplejson if installed for faster C _speedups
+        - PMBatchMail properly chunks large message sets
+        - Django backend uses PMBatchMail properly
+        - Use https by default
+        - Proper testing API key out of the box
+        - Cleaned up some PMBatchMail properties
+        - Added a few utility methods (add_message, remove_message) to PMBatchMail
+        - Added proper value checking to PMBatchMail pre-send
+        - A BIG THANKS to all new contributors!
+
     Version 0.3.1
         - Added batch-messaging support (PMBatchMail object) (deeGraYve)
           See http://developer.postmarkapp.com/developer-build.html#batching-messages
