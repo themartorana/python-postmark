@@ -477,8 +477,8 @@ class PMBatchMail(object):
     
     api_key = property(
         lambda self: self.__api_key,
-        lambda self, value: setattr(self, '_PMMail__api_key', value),
-        lambda self: setattr(self, '_PMMail__api_key', None), 
+        lambda self, value: setattr(self, '_PMBatchMail__api_key', value),
+        lambda self: setattr(self, '_PMBatchMail__api_key', None), 
         '''
         The API Key for your rack server on Postmark
         '''
@@ -486,8 +486,8 @@ class PMBatchMail(object):
 
     messages = property(
         lambda self: self.__messages,
-        lambda self, value: setattr(self, '_PMMail__messages', value),
-        lambda self: setattr(self, '_PMMail__messages', None), 
+        lambda self, value: setattr(self, '_PMBatchMail__messages', value),
+        lambda self: setattr(self, '_PMBatchMail__messages', None), 
         '''
         Messages to send
         '''
