@@ -451,12 +451,10 @@ class PMBatchMail(object):
 
     def __init__(self, **kwargs):
         self.__api_key = None
-        self.__sender = None
         self.__messages = []
 
         acceptable_keys = (
             'api_key',
-            'sender',
             'messages'
         )
 
@@ -474,36 +472,22 @@ class PMBatchMail(object):
             self.__user_agent = '%s (Django %s)' % (self.__user_agent, '_'.join([str(var) for var in VERSION]))
             if not self.__api_key and hasattr(django_settings, 'POSTMARK_API_KEY'):
                 self.__api_key = django_settings.POSTMARK_API_KEY
-            if not self.__sender and hasattr(django_settings, 'POSTMARK_SENDER'):
-                self.__sender = django_settings.POSTMARK_SENDER
         except ImportError:
             pass
     
     api_key = property(
         lambda self: self.__api_key,
-        lambda self, value: setattr(self, '_PMMail__api_key', value),
-        lambda self: setattr(self, '_PMMail__api_key', None), 
+        lambda self, value: setattr(self, '_PMBatchMail__api_key', value),
+        lambda self: setattr(self, '_PMBatchMail__api_key', None), 
         '''
         The API Key for your rack server on Postmark
         '''
     )
 
-    sender = property(
-        lambda self: self.__sender,
-        lambda self, value: setattr(self, '_PMMail__sender', value),
-        lambda self: setattr(self, '_PMMail__sender', None),
-        '''        
-        The sender, in either "name@email.com" or "First Last <name@email.com>" formats.  
-        The address should match one of your Sender Signatures in Postmark.
-        Specifying the address in the second fashion will allow you to replace
-        the name of the sender as it appears in the recipient's email client.
-        '''
-    )
-    
     messages = property(
         lambda self: self.__messages,
-        lambda self, value: setattr(self, '_PMMail__messages', value),
-        lambda self: setattr(self, '_PMMail__messages', None), 
+        lambda self, value: setattr(self, '_PMBatchMail__messages', value),
+        lambda self: setattr(self, '_PMBatchMail__messages', None), 
         '''
         Messages to send
         '''
