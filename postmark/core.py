@@ -308,7 +308,7 @@ class PMMail(object):
         if not self.__api_key:
             raise PMMailMissingValueException('Cannot send an e-mail without a Postmark API Key')
         elif not self.__sender:
-            raise PMMailMissingValueException('Cannot send an e-mail without a sender (.from field)')
+            raise PMMailMissingValueException('Cannot send an e-mail without a sender (.sender field)')
         elif not self.__to:
             raise PMMailMissingValueException('Cannot send an e-mail without at least one recipient (.to field)')
         elif not self.__subject:
@@ -493,7 +493,31 @@ class PMBatchMail(object):
         '''
     )
 
+    def add_message(self, message):
+        '''
+        Add a message to the batch
+        '''
+        self.__messages.append(message)
+
+    def remove_message(self, message):
+        '''
+        Remove a message from the batch
+        '''
+        if message in self.__messages:
+            self.__messages.remove(message)
+
+    def _check_values(self):
+        '''
+        Make sure all values are of the appropriate
+        type and are not missing.
+        '''
+        for message in self.__messages:
+            message._check_values()
+
     def send(self, test=None):
+        # Check messages for completeness prior to attempting to send
+        self._check_values()
+
         # If test is not specified, attempt to read the Django setting
         if test is None:
             try:
@@ -501,6 +525,7 @@ class PMBatchMail(object):
                 test = getattr(django_settings, "POSTMARK_TEST_MODE", None)
             except ImportError:
                 pass
+
         # Split up into groups of 500 messages for sending
         for messages in _chunks(self.messages, PMBatchMail.MAX_MESSAGES):
             json_message = []
