@@ -1,8 +1,8 @@
-__version__         = '0.3.1'
+__version__         = '0.3.2'
 __author__          = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)"
 __date__            = '2011-January-31'
 __url__             = 'http://postmarkapp.com'
-__copyright__       = "(C) 2009-2010 David Martorana, Wildbit LLC, Python Software Foundation."
+__copyright__       = "(C) 2009-2012 David Martorana, Wildbit LLC, Python Software Foundation."
 __contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), Richard Cooper (frozenskys), Miguel Araujo (maraujop), Patrick Lauber (digi604), Brian McFadden (brimcfadden), Joel Ryan (joelryan2k), Ben Hodgson (benhodgson), Dmitry Golomidov (deeGraYve)"
 
 __doc__ = '''

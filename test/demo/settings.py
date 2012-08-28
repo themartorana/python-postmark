@@ -2,6 +2,9 @@
 
 import os
 settings_path, settings_module = os.path.split(__file__)
+
+import sys
+sys.path.append('../../')
  
 DEBUG = True
 #TEMPLATE_DEBUG = DEBUG
@@ -26,5 +29,5 @@ TEMPLATE_DIRS = (
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
-POSTMARK_API_KEY = '1dd7e294-1059-43e8-ac32-d1ce25378223'
+POSTMARK_API_KEY = 'POSTMARK_API_TEST'
 POSTMARK_SENDER = 'system@playcompete.com'
