@@ -16,10 +16,10 @@ except ImportError as e:
     from urllib import urlencode
 import sys
 if sys.version_info[0] < 3:
-    from urllib2 import Request, urlopen, HTTPError
+    from urllib2 import Request, urlopen, HTTPError, URLError
 else:
     from urllib.request import Request, urlopen
-    from urllib.error import HTTPError
+    from urllib.error import HTTPError, URLError
     from http.client import HTTPConnection
     from urllib.parse import urlencode
 
@@ -408,7 +408,7 @@ class PMMail(object):
         # Set up the url Request
         req = Request(
             __POSTMARK_URL__ + 'email',
-            json.dumps(json_message, cls=PMJSONEncoder),
+            json.dumps(json_message, cls=PMJSONEncoder).encode('utf8'),
             {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -439,7 +439,7 @@ class PMMail(object):
                 raise PMMailUnprocessableEntityException('Unprocessable Entity: %s' % desc)
             elif err.code == 500:
                 raise PMMailServerErrorException('Internal server error at Postmark. Admins have been alerted.', err)
-        except urllib.error.URLError as err:
+        except URLError as err:
             if hasattr(err, 'reason'):
                 raise PMMailURLException('URLError: Failed to reach the server: %s (See "inner_exception" for details)' % err.reason, err)
             elif hasattr(err, 'code'):
@@ -541,7 +541,7 @@ class PMBatchMail(object):
 
             req = Request(
                 __POSTMARK_URL__ + 'email/batch',
-                json.dumps(json_message, cls=PMJSONEncoder),
+                json.dumps(json_message, cls=PMJSONEncoder).encode('utf8'),
                 {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
@@ -576,7 +576,7 @@ class PMBatchMail(object):
                     raise PMMailUnprocessableEntityException('Unprocessable Entity: %s' % desc)
                 elif err.code == 500:
                     raise PMMailServerErrorException('Internal server error at Postmark. Admins have been alerted.', err)
-            except urllib.error.URLError as err:
+            except URLError as err:
                 if hasattr(err, 'reason'):
                     raise PMMailURLException('URLError: Failed to reach the server: %s (See "inner_exception" for details)' % err.reason, err)
                 elif hasattr(err, 'code'):
@@ -817,7 +817,7 @@ class PMBounceManager(object):
         req_url = '/bounces/' + str(bounce_id) + '/activate'
         #print req_url
         h1 = HTTPConnection('api.postmarkapp.com')
-        dta = urlencode({"data":"blank"})
+        dta = urlencode({"data":"blank"}).encode('utf8')
         req = h1.request('PUT',
         req_url,
             dta,
