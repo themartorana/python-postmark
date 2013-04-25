@@ -75,9 +75,14 @@ class EmailBackend(BaseEmailBackend):
         attachments = []
         if message.attachments and isinstance(message.attachments, list):
             if len(message.attachments):
-                attachments = message.attachments
-        
-        postmark_message = PMMail(api_key=self.api_key, 
+                for item in message.attachments:
+                    if isinstance(item, tuple):
+                        (f, content, m) = item
+                        attachments.append((f, base64.encodestring(content), m))
+                    else:
+                        attachments.append(item)
+
+        postmark_message = PMMail(api_key=self.api_key,
                               subject=message.subject,
                               sender=message.from_email,
                               to=recipients,
