@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
 from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import EmailMessage, EmailMultiAlternatives
+import base64
 
 from core import PMMail, PMBatchMail
 
