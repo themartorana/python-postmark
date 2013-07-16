@@ -86,6 +86,7 @@ class PMMail(object):
         self.__text_body = None
         self.__custom_headers = {}
         self.__attachments = []
+        self.__message_id = None
         #self.__multipart = False
         
         acceptable_keys = (
@@ -270,6 +271,15 @@ class PMMail(object):
         Attachments, Base64 encoded, in a list.
         '''
         )
+
+    message_id = property(
+        lambda self: self.__message_id,
+        lambda self, value: setattr(self, '_PMMail__message_id', value),
+        lambda self: setattr(self, '_PMMail__message_id', None),
+        '''
+        The email message ID, a UUID string.
+        '''
+    )
     
 #     multipart = property(
 #         lambda self: self.__multipart,
@@ -414,8 +424,10 @@ class PMMail(object):
         try:
             #print 'sending request to postmark: %s' % json_message
             result = urllib2.urlopen(req)
+            response = result.read()
             result.close()
             if result.code == 200:
+                self.message_id = json.loads(response)['MessageID']
                 return True
             else:
                 raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
