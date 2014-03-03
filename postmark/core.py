@@ -674,8 +674,18 @@ class PMBounceManager(object):
         
         self._check_values()
         
-        params = '?inactive=' + inactive + '&emailFilter=' + email_filter +'&tag=' + tag 
-        params += '&count=' + str(count) + '&offset=' + str(offset)
+        params = '?count=' + str(count) + '&offset=' + str(offset)
+
+        if inactive:
+            params+= "&inactive=" + str(inactive)
+
+        if tag:
+            params+= "&tag=" + str(inactive)
+
+        if email_filter:
+            params+= "&emailFilter=" + str(email_filter)
+
+
         
         req = urllib2.Request(  	
             __POSTMARK_URL__ + 'bounces' + params,
