@@ -680,13 +680,13 @@ class PMBounceManager(object):
             params+= "&inactive=" + str(inactive)
 
         if tag:
-            params+= "&tag=" + str(inactive)
+            params+= "&tag=" + str(tag)
 
         if email_filter:
             params+= "&emailFilter=" + str(email_filter)
 
 
-        
+        print params 
         req = urllib2.Request(  	
             __POSTMARK_URL__ + 'bounces' + params,
             None,
