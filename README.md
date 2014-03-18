@@ -13,15 +13,17 @@ Dmitry Golomidov (deeGraYve)
 Matt Robenolt (mattrobenolt)
 Maxime Bouroumeau-Fuseau (maximebf)
 James Arthur (thruflo)
+Jacob (nephics)
 (Did I miss anyone?)
 
 PYTHON INFORMATION:
-    Works on Python 2.4 and better.  Versions
-    2.4 and 2.5 will require the "simplejson" 
-    library from http://code.google.com/p/simplejson/
-    Python 2.6 has JSON support built in.
+    Supports Python 2.6, 3.x. Will attempt to use simplejson speedups if installed
 
 CHANGE LOG:
+    Version 0.4.0
+        - Merged in Python 3 support - thanks Jacob!
+        - Moving minimum python version to 2.6. If you need 2.4 support, please continue to use v0.3.2!
+
     Version 0.3.2
         - Uses simplejson if installed for faster C _speedups
         - PMBatchMail properly chunks large message sets

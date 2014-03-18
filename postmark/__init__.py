@@ -3,7 +3,7 @@ __author__          = "Dave Martorana (http://davemartorana.com), Richard Cooper
 __date__            = '2011-January-31'
 __url__             = 'http://postmarkapp.com'
 __copyright__       = "(C) 2009-2012 David Martorana, Wildbit LLC, Python Software Foundation."
-__contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), Richard Cooper (frozenskys), Miguel Araujo (maraujop), Patrick Lauber (digi604), Brian McFadden (brimcfadden), Joel Ryan (joelryan2k), Ben Hodgson (benhodgson), Dmitry Golomidov (deeGraYve)"
+__contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), Richard Cooper (frozenskys), Miguel Araujo (maraujop), Patrick Lauber (digi604), Brian McFadden (brimcfadden), Joel Ryan (joelryan2k), Ben Hodgson (benhodgson), Dmitry Golomidov (deeGraYve), Jacob (nephics)"
 
 __doc__ = '''
 
