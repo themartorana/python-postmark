@@ -82,6 +82,7 @@ TODO
 - Add automatic multipart emails via regex stripping of HTML tags from html_body if the .multipart property is set to True
 - Refactor PMBounceManager Object and improve error handling within it.
 - Add PMBounceManager example to the Django test.
+- Write tests for large percentage of coverage
 - *Fill out the "Usage" section*
 
 
