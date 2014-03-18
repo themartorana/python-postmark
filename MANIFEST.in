@@ -1,3 +1,0 @@
-include README
-recursive-include docs *
-recursive-exclude test *

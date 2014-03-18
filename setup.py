@@ -1,8 +1,4 @@
-import os
 from distutils.core import setup
-
-readme = os.path.join(os.path.dirname(__file__), 'README')
-long_description = open(readme).read()
 
 setup(
     name = "python-postmark",
@@ -11,7 +7,7 @@ setup(
     author = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)",
     license = 'BSD',
     description = "Postmark library for Python 2.6 and greater.",
-    long_description = long_description,
+    long_description = "Note: To use Python 2.4 or 2.5, please use python-postmark version 0.3.2",
     url = "http://github.com/themartorana/python-postmark",
     classifiers=[
         'Development Status :: 4 - Beta',
