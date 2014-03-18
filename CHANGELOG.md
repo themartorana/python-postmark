@@ -1,3 +1,11 @@
+CHANGELOG for python-postmark
+===============================
+
+Version 0.4.0
+--------------
+- Merged in Python 3 support - thanks Jacob!
+- Moving minimum Python version to 2.6. If you need 2.4 support, please continue to use v0.3.2!
+
 Version 0.3.2
 --------------
 - Uses simplejson if installed for faster C _speedups
