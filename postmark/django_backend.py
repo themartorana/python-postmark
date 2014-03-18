@@ -64,6 +64,9 @@ class EmailBackend(BaseEmailBackend):
                 if alt[1] == "text/html":
                     html_body=alt[0]
                     break
+                    
+        if getattr(message, 'content_subtype', None) == 'html':
+            html_body=message.body
         
         reply_to = None
         custom_headers = {}           
