@@ -1,152 +1,87 @@
-PMMail, PMBatchMail, and PMBounceManager objects, as well as Django email backend (postmark.django_backend.EmailBackend) for Postmark (http://postmarkapp.com)
+python-postmark library for [Postmark](http://postmarkapp.com)
+================================================================
 
-CONTRIBUTORS:
-Dave Martorana (themartorana)
-Bill Jones (oraclebill)
-Richard Cooper (frozenskys)
-Miguel Araujo (maraujop)
-Patrick Lauber (digi604)
-Brian McFadden (brimcfadden)
-Joel Ryan (joelryan2k)
-Ben Hodgson (benhodgson)
-Dmitry Golomidov (deeGraYve)
-Matt Robenolt (mattrobenolt)
-Maxime Bouroumeau-Fuseau (maximebf)
-James Arthur (thruflo)
-Jacob (nephics)
-(Did I miss anyone?)
+Supports Python 2.6 and greater, including 3.x.
 
-PYTHON INFORMATION:
-    Supports Python 2.6, 3.x. Will attempt to use simplejson speedups if installed
+Includes:
 
-CHANGE LOG:
-    Version 0.4.0
-        - Merged in Python 3 support - thanks Jacob!
-        - Moving minimum python version to 2.6. If you need 2.4 support, please continue to use v0.3.2!
+- PMMail
+- PMBatchMail
+- PMBounceManager 
+- Django email backend (postmark.django_backend.EmailBackend)
 
-    Version 0.3.2
-        - Uses simplejson if installed for faster C _speedups
-        - PMBatchMail properly chunks large message sets
-        - Django backend uses PMBatchMail properly
-        - Use https by default
-        - Proper testing API key out of the box
-        - Cleaned up some PMBatchMail properties
-        - Added a few utility methods (add_message, remove_message) to PMBatchMail
-        - Added proper value checking to PMBatchMail pre-send
-        - A BIG THANKS to all new contributors!
+Contributors
+--------------
+See [CONTRIBUTORS.md](https://github.com/themartorana/python-postmark/blob/master/CONTRIBUTORS.md).
 
-    Version 0.3.1
-        - Added batch-messaging support (PMBatchMail object) (deeGraYve)
-          See http://developer.postmarkapp.com/developer-build.html#batching-messages
+Changelog
+----------
 
-    Version 0.2.3
-        - Merged in support for adding a tag through the Django backend (joelryan2k)
-        - Merged in support for POSTMARK_TEST_MODE overriding and beter settings defaults (benhodgson)
+Version 0.4.0
+- Merged in Python 3 support - thanks Jacob!
+- Moving minimum python version to 2.6. If you need 2.4 support, please continue to use v0.3.2!
 
-    Version 0.2.2
-        - Merged in email mime import fix from brimcfadden
-        
-    Version 0.2.1
-        - Merged in POSTMARK_TEST_MODE Django setting from maraujop
-        
-    Version 0.2.0
-        - Merged with frozenskys/master to bring in PMBounceManager
-        - Support for multiple to/cc (limit: 20 per)
-        - Changed .recipient to .to (legacy support for .recipient left in)
-        - Tag support (.tag) added
-        - Fixed the email endpoint
-        - Fixed a Django backend issue for multiple recipients (max 20)
+*[See full changelog](https://github.com/themartorana/python-postmark/blob/master/CHANGELOG.md)*
 
-    Version 0.1.6
-        - Added a new PMBounceManager Class that allows easy access to the PostMark
-          bounce API.
-        
-    Version 0.1.5
-        - Added ".cc" property for carbon copy recipients. Changed django_backend to 
-          support multiple recipients, and to use "to" rather than "recipients" on the django
-          mail object to prevent accidental leakage of BCC recipients.
-          
-    Version 0.1.4
-        - Added ".reply_to" property.  The "ReplyTo" custom header is unallowed by Postmark 
-          now, and their documentation has been updated to reflect the change.
-          http://developer.postmarkapp.com
 
-    Version 0.1.3
-        - Major fix to the way properties were being used, fixes doc strings in properties
-        - "custom_headers" is now always a dict, even if set to None
+Usage
+-----
+Make sure you have a Postmark account.  Visit http://postmarkapp.com to sign up for an account. Requires a Postmark API key.
 
-    Version 0.1.2
-        - Added 'custom_headers' property (must be a dictionary) to PMMail object
-        - Added optional 'test' argument to send function to print JSON message instead of actually sending it
-        
-    Version 0.1.1:
-        - Initial release
-
-USAGE:
-    Make sure you have a Postmark account.  Visit
-    http://postmarkapp.com to sign up for an account.
-    Requires a Postmark API key.
-
-    Import postmark.PMMail to use Postmark.  Check
-    class documentation on PMMail object for more 
-    information.
+Import `postmark.PMMail` to use Postmark. Check class documentation on `PMMail` object for more information.
     
-DJANGO:
-    The library can be used stand-alone with Django.  You can also
-    add the settings:
-    
-    POSTMARK_API_KEY    = 'your-key'
-    POSTMARK_SENDER     = 'sender@signature.com'
-    POSTMARK_TEST_MODE  = [True/False]
-    
-    to your settings.py file, and when you create a new PMMail object,
-    it will grab the API key and sender automatically.  Make sure the 
-    sender email address is one of your Sender Signature email addresses
-    in Postmark. You can also customize the name on the sender by 
-    changing the format from 'email@address.com' to 
-    'Sender Name <email@address.com>' as long as the email part is 
-    part of a Sender Signature in Postmark.
-    
-    Using POSTMARK_TEST_MODE=True will not actually send the email, but
-    instead dump the JSON packet that would be sent to Postmarkapp.com.
-    By default this setting is False, and if not specified, will 
-    be assumed to be False.
+Django
+-------
+The library can be used stand-alone with Django.  You can also add the settings:
 
-    To reoute all Django E-Mail functions like send_mail() and
-    mail_admins() through postmark use the following setting:
+```python 
+POSTMARK_API_KEY    = 'your-key'
+POSTMARK_SENDER     = 'sender@signature.com'
+POSTMARK_TEST_MODE  = [True/False]
+```
+    
+to your settings.py file, and when you create a new PMMail object, it will grab the API key and sender automatically.  Make sure the sender email address is one of your Sender Signature email addresses in Postmark. You can also customize the name on the sender by changing the format from 'email@address.com' to 'Sender Name <email@address.com>' as long as the email part is part of a Sender Signature in Postmark.
+    
+Using `POSTMARK_TEST_MODE=True` will not actually send the email, but instead dump the JSON packet that would be sent to Postmarkapp.com. By default this setting is False, and if not specified, will be assumed to be False.
 
-    EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
+To reoute all Django E-Mail functions like `send_mail()` and `mail_admins()` through postmark use the following setting:
 
-    But keep in mind that even when using standard Django functions
-    the sender must be registered with postmarkapp.com.
+```python
+EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
+```
+
+But keep in mind that even when using standard Django functions the sender must be registered with postmarkapp.com.
     
 
-EXCEPTIONS:
-    PMMailMissingValueException(Exception):
-        One of the required values for attempting a send request is missing
+Exceptions
+-----------
 
-    PMMailSendException(Exception):
-        Base Postmark send exception
+```python
+class PMMailMissingValueException(Exception):
+    #One of the required values for attempting a send request is missing
 
-    PMMailUnauthorizedException(PMMailSendException):
-        401: Unathorized sending due to bad API key
+class PMMailSendException(Exception):
+    #Base Postmark send exception
 
-    PMMailUnprocessableEntityException(PMMailSendException):
-        422: Unprocessable Entity - usually an exception with either the sender
-        not having a matching Sender Signature in Postmark.  Read the message
-        details for further information
+class PMMailUnauthorizedException(PMMailSendException):
+    #401: Unathorized sending due to bad API key
 
-    PMMailServerErrorException(PMMailSendException):
-        500: Internal error - this is on the Postmark server side.  Errors are
-        logged and recorded at Postmark.
+class PMMailUnprocessableEntityException(PMMailSendException):
+    # 422: Unprocessable Entity - usually an exception with either the sender not having a matching Sender Signature in Postmark.  Read the message details for further information
 
-    PMMailURLException(PMMailSendException):
-        A URLError was caught - usually has to do with connectivity
-        and the ability to reach the server.  The inner_exception will
-        have the base URLError object.
-        
-TODO: 
-    Add automatic multipart emails via regex stripping of HTML tags from html_body
-    if the .multipart property is set to True
-    Refactor PMBounceManager Object and improve error handling within it.
-    Add PMBounceManager example to the Django test.
+class PMMailServerErrorException(PMMailSendException):
+    #500: Internal error - this is on the Postmark server side.  Errors are logged and recorded at Postmark.
+
+class PMMailURLException(PMMailSendException):
+    #A URLError was caught - usually has to do with connectivity and the ability to reach the server.  The inner_exception will have the base URLError object.
+```
+
+TODO
+----
+    
+- Add automatic multipart emails via regex stripping of HTML tags from html_body if the .multipart property is set to True
+- Refactor PMBounceManager Object and improve error handling within it.
+- Add PMBounceManager example to the Django test.
+- *Fill out the "Usage" section*
+
+
