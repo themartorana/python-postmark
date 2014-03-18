@@ -3,7 +3,7 @@ from django.core.mail.backends.base import BaseEmailBackend
 from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 
-from core import PMMail, PMBatchMail
+from .core import PMMail, PMBatchMail
 
 class PMEmailMessage(EmailMessage):
     def __init__(self, *args, **kwargs):
@@ -68,7 +68,7 @@ class EmailBackend(BaseEmailBackend):
         reply_to = None
         custom_headers = {}           
         if message.extra_headers and isinstance(message.extra_headers, dict):
-            if message.extra_headers.has_key('Reply-To'):
+            if 'Reply-To' in message.extra_headers:
                 reply_to = message.extra_headers.pop('Reply-To')
             if len(message.extra_headers):
                 custom_headers = message.extra_headers
@@ -100,8 +100,8 @@ class EmailBackend(BaseEmailBackend):
                 # Bail.
                 return False
         else:
-            pm_messages = map(self._build_message, messages)
-            pm_messages = filter(lambda m: m != False, pm_messages)
+            pm_messages = list(map(self._build_message, messages))
+            pm_messages = [m for m in pm_messages if m != False]
             if len(pm_messages) == 0:
                 # If after filtering, there aren't any messages
                 # to send, bail.
