@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.4.1
+--------------
+- Merged proper handling of content_subtype in the Django backend - thanks Josh Owen!
+
 Version 0.4.0
 --------------
 - Merged in Python 3 support - thanks Jacob!

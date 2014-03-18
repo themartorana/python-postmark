@@ -17,6 +17,9 @@ See [CONTRIBUTORS.md](https://github.com/themartorana/python-postmark/blob/maste
 Changelog
 ----------
 
+Version 0.4.1
+- Merged proper handling of content_subtype in the Django backend - thanks Josh Owen!
+
 Version 0.4.0
 - Merged in Python 3 support - thanks Jacob!
 - Moving minimum python version to 2.6. If you need 2.4 support, please continue to use v0.3.2!

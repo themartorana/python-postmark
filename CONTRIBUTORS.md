@@ -14,5 +14,6 @@ Everyone that made python-postmark awesome
 - Maxime Bouroumeau-Fuseau (http://github.com/maximebf) 
 - James Arthur (http://github.com/thruflo) 
 - Jacob (http://github.com/nephics) 
+- Josh Owen (https://github.com/joshowen)
 
 (Did I miss anyone?)
