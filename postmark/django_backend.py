@@ -14,7 +14,7 @@ class PMEmailMessage(EmailMessage):
             self.tag = None
 
         super(PMEmailMessage, self).__init__(*args, **kwargs)
-        
+
 class PMEmailMultiAlternatives(EmailMultiAlternatives):
     def __init__(self, *args, **kwargs):
         if 'tag' in kwargs:
@@ -24,9 +24,9 @@ class PMEmailMultiAlternatives(EmailMultiAlternatives):
             self.tag = None
 
         super(PMEmailMultiAlternatives, self).__init__(*args, **kwargs)
-        
+
 class EmailBackend(BaseEmailBackend):
-    
+
     def __init__(self, api_key=None, default_sender=None, **kwargs):
         """
         Initialize the backend.
@@ -34,42 +34,42 @@ class EmailBackend(BaseEmailBackend):
         super(EmailBackend, self).__init__(**kwargs)
         self.api_key = api_key if api_key is not None else getattr(settings, 'POSTMARK_API_KEY', None)
         if self.api_key is None:
-            raise ImproperlyConfigured('POSTMARK API key must be set in Django settings file or passed to backend constructor.')            
+            raise ImproperlyConfigured('POSTMARK API key must be set in Django settings file or passed to backend constructor.')
         self.default_sender = getattr(settings, 'POSTMARK_SENDER', default_sender)
-        self.test_mode = getattr(settings, 'POSTMARK_TEST_MODE', False) 
-                                    
+        self.test_mode = getattr(settings, 'POSTMARK_TEST_MODE', False)
+
     def send_messages(self, email_messages):
         """
         Sends one or more EmailMessage objects and returns the number of email
         messages sent.
         """
         if not email_messages:
-            return         
+            return
         sent = self._send(email_messages)
         if sent:
             return len(email_messages)
         return 0
-        
-        
+
+
     def _build_message(self, message):
         """A helper method to convert a PMEmailMessage to a PMMail"""
         if not message.recipients():
-            return False            
+            return False
         recipients = ','.join(message.to)
         recipients_bcc = ','.join(message.bcc)
-        
+
         html_body = None
         if isinstance(message, EmailMultiAlternatives):
             for alt in message.alternatives:
                 if alt[1] == "text/html":
                     html_body=alt[0]
                     break
-                    
+
         if getattr(message, 'content_subtype', None) == 'html':
             html_body=message.body
-        
+
         reply_to = None
-        custom_headers = {}           
+        custom_headers = {}
         if message.extra_headers and isinstance(message.extra_headers, dict):
             if 'Reply-To' in message.extra_headers:
                 reply_to = message.extra_headers.pop('Reply-To')
@@ -79,8 +79,8 @@ class EmailBackend(BaseEmailBackend):
         if message.attachments and isinstance(message.attachments, list):
             if len(message.attachments):
                 attachments = message.attachments
-        
-        postmark_message = PMMail(api_key=self.api_key, 
+
+        postmark_message = PMMail(api_key=self.api_key,
                               subject=message.subject,
                               sender=message.from_email,
                               to=recipients,
@@ -90,7 +90,7 @@ class EmailBackend(BaseEmailBackend):
                               reply_to=reply_to,
                               custom_headers=custom_headers,
                               attachments=attachments)
-        
+
         postmark_message.tag = getattr(message, 'tag', None)
         return postmark_message
 
@@ -117,3 +117,4 @@ class EmailBackend(BaseEmailBackend):
                 return False
             raise
         return True
+
