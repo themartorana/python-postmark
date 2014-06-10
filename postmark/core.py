@@ -77,6 +77,7 @@ class PMMail(object):
                         Can be multiple values separated by commas (limit 20)
         subject:        Subject of the email
         tag:            Use for adding categorizations to your email
+        track_opens:    Boolean to enable email open tracking
         html_body:      Email message in HTML
         text_body:      Email message in plain text
         track_opens:    Whether or not to track if emails were opened or not
@@ -93,6 +94,7 @@ class PMMail(object):
         self.__bcc = None
         self.__subject = None
         self.__tag = None
+        self.__track_opens = None
         self.__html_body = None
         self.__text_body = None
         self.__track_opens = False
@@ -109,6 +111,7 @@ class PMMail(object):
             'bcc',
             'subject',
             'tag',
+            'track_opens',
             'html_body',
             'text_body',
             'track_opens',
@@ -246,6 +249,15 @@ class PMMail(object):
         '''
     )
 
+    track_opens = property(
+        lambda self: self.__track_opens,
+        lambda self, value: setattr(self, '_PMMail__track_opens', value),
+        lambda self: setattr(self, '_PMMail__track_opens', None),
+        '''
+        Set to True to enable e-mail open tracking
+        '''
+    )
+
     html_body = property(
         lambda self: self.__html_body,
         lambda self, value: setattr(self, '_PMMail__html_body', value),
@@ -360,6 +372,9 @@ class PMMail(object):
 
         if self.__tag:
             json_message['Tag'] = self.__tag
+
+        if self.__track_opens:
+            json_message['TrackOpens'] = self.__track_opens
 
         if self.__html_body:
             json_message['HtmlBody'] = self.__html_body

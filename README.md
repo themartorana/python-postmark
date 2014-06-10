@@ -7,7 +7,7 @@ Includes:
 
 - PMMail
 - PMBatchMail
-- PMBounceManager 
+- PMBounceManager
 - Django email backend (postmark.django_backend.EmailBackend)
 
 Contributors
@@ -36,19 +36,19 @@ Usage
 Make sure you have a Postmark account.  Visit http://postmarkapp.com to sign up for an account. Requires a Postmark API key.
 
 Import `postmark.PMMail` to use Postmark. Check class documentation on `PMMail` object for more information.
-    
+
 Django
 -------
 The library can be used stand-alone with Django.  You can also add the settings:
 
-```python 
+```python
 POSTMARK_API_KEY    = 'your-key'
 POSTMARK_SENDER     = 'sender@signature.com'
 POSTMARK_TEST_MODE  = [True/False]
 ```
-    
+
 to your settings.py file, and when you create a new PMMail object, it will grab the API key and sender automatically.  Make sure the sender email address is one of your Sender Signature email addresses in Postmark. You can also customize the name on the sender by changing the format from 'email@address.com' to 'Sender Name <email@address.com>' as long as the email part is part of a Sender Signature in Postmark.
-    
+
 Using `POSTMARK_TEST_MODE=True` will not actually send the email, but instead dump the JSON packet that would be sent to Postmarkapp.com. By default this setting is False, and if not specified, will be assumed to be False.
 
 To reoute all Django E-Mail functions like `send_mail()` and `mail_admins()` through postmark use the following setting:
@@ -58,7 +58,7 @@ EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
 ```
 
 But keep in mind that even when using standard Django functions the sender must be registered with postmarkapp.com.
-    
+
 
 Exceptions
 -----------
@@ -85,7 +85,7 @@ class PMMailURLException(PMMailSendException):
 
 TODO
 ----
-    
+
 - Add automatic multipart emails via regex stripping of HTML tags from html_body if the .multipart property is set to True
 - Refactor PMBounceManager Object and improve error handling within it.
 - Add PMBounceManager example to the Django test.
