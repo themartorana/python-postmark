@@ -1,4 +1,4 @@
-__version__         = '0.4.1'
+__version__         = '0.4.2'
 __author__          = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)"
 __date__            = '2010-April-14'
 __url__             = 'http://postmarkapp.com'
@@ -29,14 +29,14 @@ try:
     import simplejson as json
 except ImportError:
     try:
-        import json
+        # Try django first, for speedups, since we support the backend
+        from django.utils import simplejson as json
     except ImportError:
-        try:
-            # Last ditch effort to try and grab it from Django if they're using Django
-            from django.utils import simplejson as json
-        except ImportError:
-            raise Exception('Cannot use python-postmark library without Python 2.6 or greater, or Python 2.4 or 2.5 and the "simplejson" library')
+        import json
 
+
+#
+#
 class PMJSONEncoder(json.JSONEncoder):
     def default(self, o):
         try:
@@ -53,6 +53,9 @@ class PMJSONEncoder(json.JSONEncoder):
 #
 __POSTMARK_URL__ = 'https://api.postmarkapp.com/'
 
+
+#
+#
 class PMMail(object):
     '''
     The Postmark Mail object.
@@ -76,6 +79,7 @@ class PMMail(object):
         tag:            Use for adding categorizations to your email
         html_body:      Email message in HTML
         text_body:      Email message in plain text
+        track_opens:    Whether or not to track if emails were opened or not
         custom_headers: A dictionary of key-value pairs of custom headers.
         attachments:    A list of tuples or email.mime.base.MIMEBase objects
                         describing attachments.
@@ -91,6 +95,7 @@ class PMMail(object):
         self.__tag = None
         self.__html_body = None
         self.__text_body = None
+        self.__track_opens = False
         self.__custom_headers = {}
         self.__attachments = []
         #self.__multipart = False
@@ -106,6 +111,7 @@ class PMMail(object):
             'tag',
             'html_body',
             'text_body',
+            'track_opens',
             'custom_headers',
             'attachments',
             #'multipart'
@@ -258,6 +264,16 @@ class PMMail(object):
         '''
     )
 
+    track_opens = property(
+        lambda self: self.__track_opens,
+        lambda self, value: setattr(self, '_PMMail__track_opens', value),
+        lambda self: setattr(self, '_PMMail__track_opens', None),
+        '''
+        Whether or not to track opens
+        NOTE: Requires html_body to be set to work
+        '''
+    )
+
     custom_headers = property(
         lambda self: self.__custom_headers,
         _set_custom_headers,
@@ -276,13 +292,13 @@ class PMMail(object):
         '''
         Attachments, Base64 encoded, in a list.
         '''
-        )
+    )
 
-#     multipart = property(
-#         lambda self: self.__multipart,
-#         lambda self, value: setattr(self, '_PMMail__multipart', value),
-#         'The API Key for one of your servers on Postmark'
-#     )
+    # multipart = property(
+    #     lambda self: self.__multipart,
+    #     lambda self, value: setattr(self, '_PMMail__multipart', value),
+    #     'The API Key for one of your servers on Postmark'
+    # )
 
 
     #####################
@@ -322,6 +338,8 @@ class PMMail(object):
             raise PMMailMissingValueException('Cannot send an e-mail without a subject')
         elif not self.__html_body and not self.__text_body:
             raise PMMailMissingValueException('Cannot send an e-mail without either an HTML or text version of your e-mail body')
+        if self.__track_opens and not self.__html_body:
+            print('WARNING: .track_opens set to True with no .html_body set. Tracking opens will not work; message will still send.')
 
     def to_json_message(self):
         json_message = {
@@ -348,6 +366,9 @@ class PMMail(object):
 
         if self.__text_body:
             json_message['TextBody'] = self.__text_body
+
+        if self.__track_opens:
+            json_message['TrackOpens'] = True
 
         if len(self.__custom_headers) > 0:
             cust_headers = []
@@ -388,9 +409,9 @@ class PMMail(object):
         # Set up message dictionary
         json_message = self.to_json_message()
 
-#         if (self.__html_body and not self.__text_body) and self.__multipart:
-#             # TODO: Set up regex to strip html
-#             pass
+        # if (self.__html_body and not self.__text_body) and self.__multipart:
+        #     # TODO: Set up regex to strip html
+        #     pass
 
         # If test is not specified, attempt to read the Django setting
         if test is None:

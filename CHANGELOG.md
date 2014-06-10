@@ -1,6 +1,12 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.4.2
+-------------
+Version 0.4.2
+- Added in .track_opens to support open tracking
+  See: http://developer.postmarkapp.com/developer-build.html#open-tracking
+
 Version 0.4.1
 --------------
 - Merged proper handling of content_subtype in the Django backend - thanks Josh Owen!
