@@ -7,6 +7,7 @@ Version 0.4.2
 - Added in .track_opens to support open tracking
   See: http://developer.postmarkapp.com/developer-build.html#open-tracking
 - Added POSTMARK_TRACK_OPENS setting to the Django backend (danxshap)
+- Don't require `content_subtype` in Django backend to be set to `"html"` (danxshap)
 
 Version 0.4.1
 --------------
