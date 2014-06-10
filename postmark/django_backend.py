@@ -13,6 +13,12 @@ class PMEmailMessage(EmailMessage):
         else:
             self.tag = None
 
+        if 'track_opens' in kwargs:
+            self.track_opens = kwargs['track_opens']
+            del kwargs['track_opens']
+        else:
+            self.track_opens = getattr(settings, 'POSTMARK_TRACK_OPENS', False)
+
         super(PMEmailMessage, self).__init__(*args, **kwargs)
         
 class PMEmailMultiAlternatives(EmailMultiAlternatives):
@@ -22,6 +28,12 @@ class PMEmailMultiAlternatives(EmailMultiAlternatives):
             del kwargs['tag']
         else:
             self.tag = None
+
+        if 'track_opens' in kwargs:
+            self.track_opens = kwargs['track_opens']
+            del kwargs['track_opens']
+        else:
+            self.track_opens = getattr(settings, 'POSTMARK_TRACK_OPENS', False)
 
         super(PMEmailMultiAlternatives, self).__init__(*args, **kwargs)
         
@@ -92,6 +104,8 @@ class EmailBackend(BaseEmailBackend):
                               attachments=attachments)
         
         postmark_message.tag = getattr(message, 'tag', None)
+        postmark_message.track_opens = getattr(message, 'track_opens', False)
+        
         return postmark_message
 
     def _send(self, messages):

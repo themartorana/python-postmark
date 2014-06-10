@@ -15,5 +15,6 @@ Everyone that made python-postmark awesome
 - James Arthur (http://github.com/thruflo) 
 - Jacob (http://github.com/nephics) 
 - Josh Owen (https://github.com/joshowen)
+- Daniel Shapiro (https://github.com/danxshap)
 
 (Did I miss anyone?)

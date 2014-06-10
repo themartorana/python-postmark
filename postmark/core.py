@@ -136,6 +136,8 @@ class PMMail(object):
                 self.__api_key = django_settings.POSTMARK_API_KEY
             if not self.__sender and hasattr(django_settings, 'POSTMARK_SENDER'):
                 self.__sender = django_settings.POSTMARK_SENDER
+            if not self.__track_opens and hasattr(django_settings, 'POSTMARK_TRACK_OPENS'):
+                self.__track_opens = django_settings.POSTMARK_TRACK_OPENS
         except ImportError:
             pass
 

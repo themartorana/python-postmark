@@ -42,9 +42,10 @@ Django
 The library can be used stand-alone with Django.  You can also add the settings:
 
 ```python 
-POSTMARK_API_KEY    = 'your-key'
-POSTMARK_SENDER     = 'sender@signature.com'
-POSTMARK_TEST_MODE  = [True/False]
+POSTMARK_API_KEY     = 'your-key'
+POSTMARK_SENDER      = 'sender@signature.com'
+POSTMARK_TEST_MODE   = [True/False]
+POSTMARK_TRACK_OPENS = [True/False]
 ```
     
 to your settings.py file, and when you create a new PMMail object, it will grab the API key and sender automatically.  Make sure the sender email address is one of your Sender Signature email addresses in Postmark. You can also customize the name on the sender by changing the format from 'email@address.com' to 'Sender Name <email@address.com>' as long as the email part is part of a Sender Signature in Postmark.
