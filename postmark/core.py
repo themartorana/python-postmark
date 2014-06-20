@@ -98,6 +98,7 @@ class PMMail(object):
         self.__track_opens = False
         self.__custom_headers = {}
         self.__attachments = []
+        self.__message_id = None
         #self.__multipart = False
 
         acceptable_keys = (
@@ -302,7 +303,15 @@ class PMMail(object):
     #     'The API Key for one of your servers on Postmark'
     # )
 
-
+    message_id = property(
+        lambda self: self.__message_id,
+        lambda self, value: setattr(self, '_PMMail__message_id', value),
+        lambda self: setattr(self, '_PMMail__message_id', None),
+        '''
+        The email message ID, a UUID string.
+        '''
+    )
+    
     #####################
     #
     # LEGACY SUPPORT
@@ -444,8 +453,10 @@ class PMMail(object):
         try:
             #print 'sending request to postmark: %s' % json_message
             result = urlopen(req)
+            jsontxt = result.read()
             result.close()
             if result.code == 200:
+                self.message_id = json.loads(jsontxt).get('MessageID', None)
                 return True
             else:
                 raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
@@ -581,9 +592,13 @@ class PMBatchMail(object):
             # Attempt send
             try:
                 result = urlopen(req)
+                jsontxt = result.read()
                 result.close()
                 if result.code == 200:
-                    pass
+                    results = json.loads(jsontxt)
+                    print results
+                    for i in range(0, len(results)):
+                        self.__messages[i].message_id = results[i].get("MessageID", None)
                 else:
                     raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
             except HTTPError as err:
