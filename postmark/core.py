@@ -596,7 +596,6 @@ class PMBatchMail(object):
                 result.close()
                 if result.code == 200:
                     results = json.loads(jsontxt)
-                    print results
                     for i in range(0, len(results)):
                         self.__messages[i].message_id = results[i].get("MessageID", None)
                 else:
