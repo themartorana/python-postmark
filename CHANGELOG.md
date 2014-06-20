@@ -1,9 +1,12 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.4.3
+-------------
+- Added message_id property to messages for post-send record-tracking (jdavisp3)
+
 Version 0.4.2
 -------------
-Version 0.4.2
 - Added in .track_opens to support open tracking
   See: http://developer.postmarkapp.com/developer-build.html#open-tracking
 - Added POSTMARK_TRACK_OPENS setting to the Django backend (danxshap)

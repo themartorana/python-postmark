@@ -17,6 +17,9 @@ See [CONTRIBUTORS.md](https://github.com/themartorana/python-postmark/blob/maste
 Changelog
 ----------
 
+Version 0.4.3
+- Added message_id property to messages for post-send record-tracking (jdavisp3)
+
 Version 0.4.2
 - Added in .track_opens to support open tracking
   See: http://developer.postmarkapp.com/developer-build.html#open-tracking
