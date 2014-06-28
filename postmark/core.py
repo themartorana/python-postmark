@@ -1,5 +1,3 @@
-from contextlib import closing
-
 __version__         = '0.4.3'
 __author__          = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)"
 __date__            = '2010-April-14'
@@ -26,6 +24,7 @@ else:
     from urllib.parse import urlencode
 
 import collections
+from contextlib import closing
 
 try:
     import simplejson as json
