@@ -1,3 +1,5 @@
+from contextlib import closing
+
 __version__         = '0.4.3'
 __author__          = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)"
 __date__            = '2010-April-14'
@@ -150,9 +152,9 @@ class PMMail(object):
         A special set function to ensure
         we're setting with a dictionary
         '''
-        if value == None:
+        if value is None:
             setattr(self, '_PMMail__custom_headers', {})
-        elif type(value) == dict:
+        elif isinstance(value, dict):
             setattr(self, '_PMMail__custom_headers', value)
         else:
             raise TypeError('Custom headers must be a dictionary of key-value pairs')
@@ -162,9 +164,9 @@ class PMMail(object):
         A special set function to ensure
         we're setting with a list
         '''
-        if value == None:
+        if value is None:
             setattr(self, '_PMMail__attachments', [])
-        elif type(value) == list:
+        elif isinstance(value, list):
             setattr(self, '_PMMail__attachments', value)
         else:
             raise TypeError('Attachments must be a list')
@@ -383,17 +385,17 @@ class PMMail(object):
 
         if len(self.__custom_headers) > 0:
             cust_headers = []
-            for key in self.__custom_headers.keys():
+            for key, value in self.__custom_headers.items():
                 cust_headers.append({
                     'Name': key,
-                    'Value': self.__custom_headers[key]
+                    'Value': value
                 })
             json_message['Headers'] = cust_headers
 
         if len(self.__attachments) > 0:
             attachments = []
             for attachment in self.__attachments:
-                if type(attachment) is tuple:
+                if isinstance(attachment, tuple):
                     attachments.append({
                             "Name": attachment[0],
                             "Content": attachment[1],
@@ -596,8 +598,8 @@ class PMBatchMail(object):
                 result.close()
                 if result.code == 200:
                     results = json.loads(jsontxt)
-                    for i in range(0, len(results)):
-                        self.__messages[i].message_id = results[i].get("MessageID", None)
+                    for i, res in enumerate(results):
+                        self.__messages[i].message_id = res.get("MessageID", None)
                 else:
                     raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
             except HTTPError as err:
@@ -696,12 +698,11 @@ class PMBounceManager(object):
         try:
             #print 'sending request to postmark:'
             result = urlopen(req)
-            if result.code == 200:
-                return json.loads(result.read())
-                result.close()
-            else:
-                result.close()
-                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+            with closing(result):
+                if result.code == 200:
+                    return json.loads(result.read())
+                else:
+                    raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
 
         except HTTPError as err:
             return err
@@ -736,12 +737,11 @@ class PMBounceManager(object):
         try:
             #print 'sending request to postmark:'
             result = urlopen(req)
-            if result.code == 200:
-                return json.loads(result.read())
-                result.close()
-            else:
-                result.close()
-                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+            with closing(result):
+                if result.code == 200:
+                    return json.loads(result.read())
+                else:
+                    raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
 
         except HTTPError as err:
             return err
@@ -769,12 +769,11 @@ class PMBounceManager(object):
         try:
             #print 'sending request to postmark:'
             result = urlopen(req)
-            if result.code == 200:
-                return json.loads(result.read())
-                result.close()
-            else:
-                result.close()
-                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+            with closing(result):
+                if result.code == 200:
+                    return json.loads(result.read())
+                else:
+                    raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
 
         except HTTPError as err:
             return err
@@ -805,12 +804,11 @@ class PMBounceManager(object):
         try:
             print('sending request to postmark:')
             result = urlopen(req)
-            if result.code == 200:
-                return json.loads(result.read())
-                result.close()
-            else:
-                result.close()
-                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+            with closing(result):
+                if result.code == 200:
+                    return json.loads(result.read())
+                else:
+                    raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
 
         except HTTPError as err:
             return err
@@ -836,12 +834,11 @@ class PMBounceManager(object):
         try:
             #print 'sending request to postmark:'
             result = urlopen(req)
-            if result.code == 200:
-                return json.loads(result.read())
-                result.close()
-            else:
-                result.close()
-                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+            with closing(result):
+                if result.code == 200:
+                    return json.loads(result.read())
+                else:
+                    raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
 
         except HTTPError as err:
             return err
@@ -916,7 +913,3 @@ class PMMailURLException(PMMailSendException):
     have the base URLError object.
     '''
     pass
-
-
-
-
