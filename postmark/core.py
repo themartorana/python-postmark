@@ -17,6 +17,7 @@ except ImportError as e:
 import sys
 if sys.version_info[0] < 3:
     from urllib2 import Request, urlopen, HTTPError, URLError
+    from urllib import urlencode
 else:
     from urllib.request import Request, urlopen
     from urllib.error import HTTPError, URLError
@@ -622,6 +623,115 @@ class PMBatchMail(object):
                     raise PMMailURLException('URLError: The server couldn\'t fufill the request. (See "inner_exception" for details)', err)
         return True
 
+class PMOpensManager(object):
+    '''
+    The Postmark Opens object.
+    '''
+    def __init__(self, **kwargs):
+        '''
+        Keyword arguments are:
+        api_key:        Your Postmark server API key
+        '''
+        # initialize properties
+        self.__api_key = kwargs.get('api_key')
+
+
+        acceptable_keys = (
+            'api_key',
+        )
+
+        self.__user_agent = 'Python/%s (python-postmark library version %s)' % ('_'.join([str(var) for var in sys.version_info]), __version__)  
+
+        for key in kwargs:
+            if key in acceptable_keys:
+                setattr(self, '_PMOpensManager__%s' % key, kwargs[key])
+
+    # Try to pull in the API key from Django
+        try:
+            from django import VERSION
+            from django.conf import settings as django_settings
+            if not self.__api_key and hasattr(django_settings, 'POSTMARK_API_KEY'):
+                self.__api_key = django_settings.POSTMARK_API_KEY
+            self.__user_agent = '%s (Django %s)' % (self.__user_agent, '_'.join([str(var) for var in VERSION]))
+        except ImportError:
+            pass
+
+    def _check_values(self):
+        '''
+        Make sure all values are of the appropriate
+        type and are not missing.
+        '''
+        if not self.__api_key:
+            raise PMMailMissingValueException('Cannot check opens without a Postmark Server API Key')
+
+    api_key = property(
+        lambda self: self.__api_key,
+        lambda self, value: setattr(self, '_PMMail__api_key', value),
+        lambda self: setattr(self, '_PMMail__api_key', None),
+        '''
+        The API Key for your rack server on Postmark
+        '''
+    )
+
+    def get_all(self, count=25, offset=0, **kwargs):
+        self._check_values()
+
+        params = '?' + urlencode(kwargs) + '&count=' + str(count) + '&offset=' + str(offset)
+
+        req = Request(
+            __POSTMARK_URL__ + 'messages/outbound/opens' + params,
+            None,
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Postmark-Server-Token': self.__api_key,
+                'User-agent': self.__user_agent
+            }
+        )
+
+        # Attempt send
+        try:
+            #print 'sending request to postmark:'
+            result = urlopen(req)
+            if result.code == 200:
+                return json.loads(result.read())
+                result.close()
+            else:
+                result.close()
+                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+
+        except HTTPError as err:
+            return err
+
+    def get_single(self, message_id, count=25, offset=0):
+        self._check_values()
+
+        params = '?count=' + str(count) + '&offset=' + str(offset)
+
+        req = Request(
+            __POSTMARK_URL__ + 'messages/outbound/opens/' + message_id + params,
+            None,
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Postmark-Server-Token': self.__api_key,
+                'User-agent': self.__user_agent
+            }
+        )
+
+        # Attempt send
+        try:
+            #print 'sending request to postmark:'
+            result = urlopen(req)
+            if result.code == 200:
+                return json.loads(result.read())
+                result.close()
+            else:
+                result.close()
+                raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
+
+        except HTTPError as err:
+            return err
 
 
 class PMBounceManager(object):
