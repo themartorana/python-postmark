@@ -42,6 +42,8 @@ class PMJSONEncoder(json.JSONEncoder):
         try:
             if hasattr(o, '_proxy____str_cast') and isinstance(o._proxy____str_cast, collections.Callable):
                 return o._proxy____str_cast()
+            elif hasattr(o, '_proxy____text_cast') and isinstance(o._proxy____text_cast, collections.Callable):
+                return o._proxy____text_cast()
             elif hasattr(o, '_proxy____unicode_cast'):
                 return str(o)
         except:
