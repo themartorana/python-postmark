@@ -1,6 +1,12 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.4.4
+-------------
+- Minor code cleanup (Stranger6667)
+- Fix for Django 1.5+ ugettext_lazy strings being improperly converted (#11, #41) (justinabrahms, rduffield)
+- Demo brought up to Django 1.6 (catskul)
+
 Version 0.4.3
 -------------
 - Added message_id property to messages for post-send record-tracking (jdavisp3)
