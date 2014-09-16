@@ -109,7 +109,7 @@ class EmailBackend(BaseEmailBackend):
         """A helper method that does the actual sending."""
         if len(messages) == 1:
             to_send = self._build_message(messages[0])
-            if to_send == False:
+            if to_send is False:
                 # The message was missing recipients.
                 # Bail.
                 return False
