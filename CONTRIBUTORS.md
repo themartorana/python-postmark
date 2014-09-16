@@ -17,5 +17,9 @@ Everyone that made python-postmark awesome
 - Josh Owen (https://github.com/joshowen)
 - Daniel Shapiro (https://github.com/danxshap)
 - Dave Peticolas (https://github.com/jdavisp3)
+- Justin Abrahms (https://github.com/justinabrahms)
+- Ryan Duffield (https://github.com/rduffield)
+- Dmitry Dygalo (https://github.com/Stranger6667)
+- catskul (https://github.com/catskul)
 
 (Did I miss anyone?)
