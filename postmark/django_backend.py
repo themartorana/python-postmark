@@ -68,6 +68,7 @@ class EmailBackend(BaseEmailBackend):
         if not message.recipients():
             return False
         recipients = ','.join(message.to)
+        recipients_cc = ','.join(message.cc)
         recipients_bcc = ','.join(message.bcc)
 
         html_body = None
@@ -93,6 +94,7 @@ class EmailBackend(BaseEmailBackend):
                               subject=message.subject,
                               sender=message.from_email,
                               to=recipients,
+                              cc=recipients_cc,
                               bcc=recipients_bcc,
                               text_body=message.body,
                               html_body=html_body,
@@ -102,7 +104,7 @@ class EmailBackend(BaseEmailBackend):
 
         postmark_message.tag = getattr(message, 'tag', None)
         postmark_message.track_opens = getattr(message, 'track_opens', False)
-        
+
         return postmark_message
 
     def _send(self, messages):
