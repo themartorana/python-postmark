@@ -21,5 +21,6 @@ Everyone that made python-postmark awesome
 - Ryan Duffield (https://github.com/rduffield)
 - Dmitry Dygalo (https://github.com/Stranger6667)
 - catskul (https://github.com/catskul)
+- Michael Flaxman (https://github.com/mflaxman)
 
 (Did I miss anyone?)

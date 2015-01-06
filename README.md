@@ -1,7 +1,7 @@
 python-postmark library for [Postmark](http://postmarkapp.com)
 ================================================================
 
-Supports Python 2.6 and greater, including 3.x.
+Supports Python 2.7 and greater, including 3.x.
 
 Includes:
 
@@ -17,6 +17,9 @@ See [CONTRIBUTORS.md](https://github.com/themartorana/python-postmark/blob/maste
 Changelog
 ----------
 
+Version 0.4.5
+- Fix for Python 3 support (issue #42, PR #43) (mflaxman)
+
 Version 0.4.4
 - Minor code cleanup (Stranger6667)
 - Fix for Django 1.5+ ugettext_lazy strings being improperly converted (#11, #41) (justinabrahms, rduffield)
@@ -30,13 +33,6 @@ Version 0.4.2
   See: http://developer.postmarkapp.com/developer-build.html#open-tracking
 - Added `POSTMARK_TRACK_OPENS` setting to the Django backend (danxshap)
 - Don't require `content_subtype` in Django backend to be set to `"html"` (danxshap)
-
-Version 0.4.1
-- Merged proper handling of content_subtype in the Django backend - thanks Josh Owen!
-
-Version 0.4.0
-- Merged in Python 3 support - thanks Jacob!
-- Moving minimum python version to 2.6. If you need 2.4 support, please continue to use v0.3.2!
 
 *[See full changelog](https://github.com/themartorana/python-postmark/blob/master/CHANGELOG.md)*
 

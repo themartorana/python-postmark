@@ -1,9 +1,8 @@
-__version__         = '0.4.4'
+__version__         = '0.4.5'
 __author__          = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)"
 __date__            = '2010-April-14'
 __url__             = 'http://postmarkapp.com'
 __copyright__       = "(C) 2009-2014 David Martorana, Wildbit LLC, Python Software Foundation."
-__contributors__    = "Dave Martorana (themartorana), Bill Jones (oraclebill), Richard Cooper (frozenskys), Miguel Araujo (maraujop), Patrick Lauber (digi604), Brian McFadden (brimcfadden), Joel Ryan (joelryan2k), Ben Hodgson (benhodgson), Dmitry Golomidov (deeGraYve)"
 
 #
 # Imports (JSON library based on import try)

@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.4.5
+-------------
+- Fix for Python 3 support (issue #42, PR #43) (mflaxman)
+
 Version 0.4.4
 -------------
 - Minor code cleanup (Stranger6667)
