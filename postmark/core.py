@@ -456,7 +456,7 @@ class PMMail(object):
         try:
             #print 'sending request to postmark: %s' % json_message
             result = urlopen(req)
-            jsontxt = result.read()
+            jsontxt = result.read().decode()
             result.close()
             if result.code == 200:
                 self.message_id = json.loads(jsontxt).get('MessageID', None)
@@ -468,7 +468,7 @@ class PMMail(object):
                 raise PMMailUnauthorizedException('Sending Unauthorized - incorrect API key.', err)
             elif err.code == 422:
                 try:
-                    jsontxt = err.read()
+                    jsontxt = err.read().decode()
                     jsonobj = json.loads(jsontxt)
                     desc = jsonobj['Message']
                 except:
