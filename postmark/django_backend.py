@@ -71,12 +71,18 @@ class EmailBackend(BaseEmailBackend):
         recipients_cc = ','.join(message.cc)
         recipients_bcc = ','.join(message.bcc)
 
+        text_body = message.body
         html_body = None
         if isinstance(message, EmailMultiAlternatives):
             for alt in message.alternatives:
                 if alt[1] == "text/html":
                     html_body=alt[0]
                     break
+
+        elif getattr(message, 'content_subtype', None) == 'html':
+            # Don't send html content as plain text
+            text_body = None
+            html_body = message.body
 
         reply_to = None
         custom_headers = {}
@@ -96,7 +102,7 @@ class EmailBackend(BaseEmailBackend):
                               to=recipients,
                               cc=recipients_cc,
                               bcc=recipients_bcc,
-                              text_body=message.body,
+                              text_body=text_body,
                               html_body=html_body,
                               reply_to=reply_to,
                               custom_headers=custom_headers,
