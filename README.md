@@ -17,6 +17,9 @@ See [CONTRIBUTORS.md](https://github.com/themartorana/python-postmark/blob/maste
 Changelog
 ----------
 
+Version 0.4.6
+- Fix for using content subtype in Django backend for HTML email (ryankuczka)
+
 Version 0.4.5
 - Fix for Python 3 support (issue #42, PR #43) (mflaxman)
 
