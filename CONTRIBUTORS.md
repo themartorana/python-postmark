@@ -23,5 +23,6 @@ Everyone that made python-postmark awesome
 - catskul (https://github.com/catskul)
 - Michael Flaxman (https://github.com/mflaxman)
 - Ryan Kuczka (https://github.com/ryankuczka)
+- @thanosd (https://github.com/thanosd)
 
 (Did I miss anyone?)

@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.4.7
+-------------
+- Fix base64 encoding in Django API for attachments (thanosd)
+
 Version 0.4.6
 -------------
 - Fix for using content subtype in Django backend for HTML email (ryankuczka)

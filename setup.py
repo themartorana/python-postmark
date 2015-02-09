@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name="python-postmark",
-    version="0.4.6",
+    version="0.4.7",
     packages=['postmark'],
     author="Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)",
     license='BSD',
