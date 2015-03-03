@@ -558,6 +558,9 @@ class PMBatchMail(object):
             message._check_values()
 
     def send(self, test=None):
+        # Has one of the messages caused an inactive recipient error?
+        inactive_recipient = False
+
         # Check messages for completeness prior to attempting to send
         self._check_values()
 
@@ -610,8 +613,17 @@ class PMBatchMail(object):
                         jsontxt = err.read()
                         jsonobj = json.loads(jsontxt)
                         desc = jsonobj['Message']
-                    except:
-                        desc = 'Description not given'
+                        error_code = jsonobj['ErrorCode']
+                    except KeyError:
+                        raise PMMailUnprocessableEntityException('Unprocessable Entity: Description not given')
+
+                    if error_code == 406:
+                        # One of the message recipients was inactive. Postmark still sends the
+                        # rest of the messages that have active recipients. Continue sending
+                        # the rest of the chunks.
+                        inactive_recipient = True
+                        continue
+
                     raise PMMailUnprocessableEntityException('Unprocessable Entity: %s' % desc)
                 elif err.code == 500:
                     raise PMMailServerErrorException('Internal server error at Postmark. Admins have been alerted.', err)
@@ -622,6 +634,10 @@ class PMBatchMail(object):
                     raise PMMailURLException('URLError: %d: The server couldn\'t fufill the request. (See "inner_exception" for details)' % err.code, err)
                 else:
                     raise PMMailURLException('URLError: The server couldn\'t fufill the request. (See "inner_exception" for details)', err)
+
+        if inactive_recipient:
+            raise PMMailInactiveRecipientException('You tried to send email to a recipient that has been marked as inactive.')
+
         return True
 
 
@@ -911,5 +927,13 @@ class PMMailURLException(PMMailSendException):
     A URLError was caught - usually has to do with connectivity
     and the ability to reach the server.  The inner_exception will
     have the base URLError object.
+    '''
+    pass
+
+class PMMailInactiveRecipientException(PMMailSendException):
+    '''
+    406: You tried to send a message to a recipient that has been marked as
+    inactive. If this was a batch operation, the rest of the messages were
+    still sent.
     '''
     pass
