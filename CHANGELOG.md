@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.4.8
+-------------
+- Handle inactive recipient errors (nicholasserra)
+
 Version 0.4.7
 -------------
 - Fix base64 encoding in Django API for attachments (thanosd)
