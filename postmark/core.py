@@ -470,8 +470,13 @@ class PMMail(object):
                     jsontxt = err.read().decode()
                     jsonobj = json.loads(jsontxt)
                     desc = jsonobj['Message']
-                except:
-                    desc = 'Description not given'
+                    error_code = jsonobj['ErrorCode']
+                except KeyError:
+                    raise PMMailUnprocessableEntityException('Unprocessable Entity: Description not given')
+
+                if error_code == 406:
+                    raise PMMailInactiveRecipientException('You tried to send email to a recipient that has been marked as inactive.')
+
                 raise PMMailUnprocessableEntityException('Unprocessable Entity: %s' % desc)
             elif err.code == 500:
                 raise PMMailServerErrorException('Internal server error at Postmark. Admins have been alerted.', err)
