@@ -602,7 +602,7 @@ class PMBatchMail(object):
             # Attempt send
             try:
                 result = urlopen(req)
-                jsontxt = result.read()
+                jsontxt = result.read().decode()
                 result.close()
                 if result.code == 200:
                     results = json.loads(jsontxt)
@@ -615,7 +615,7 @@ class PMBatchMail(object):
                     raise PMMailUnauthorizedException('Sending Unauthorized - incorrect API key.', err)
                 elif err.code == 422:
                     try:
-                        jsontxt = err.read()
+                        jsontxt = err.read().decode()
                         jsonobj = json.loads(jsontxt)
                         desc = jsonobj['Message']
                         error_code = jsonobj['ErrorCode']

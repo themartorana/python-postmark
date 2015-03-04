@@ -1,10 +1,8 @@
 import sys
 import unittest
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+
+from io import BytesIO
 
 if sys.version_info[0] < 3:
     from urllib2 import HTTPError
@@ -23,8 +21,8 @@ from django.conf import settings
 
 class PMMailTests(unittest.TestCase):
     def test_406_error_inactive_recipient(self):
-        json_payload = StringIO()
-        json_payload.write('{"Message": "", "ErrorCode": 406}')
+        json_payload = BytesIO()
+        json_payload.write(b'{"Message": "", "ErrorCode": 406}')
         json_payload.seek(0)
 
         message = PMMail(sender='from@example.com', to='to@example.com',
@@ -35,8 +33,8 @@ class PMMailTests(unittest.TestCase):
             self.assertRaises(PMMailInactiveRecipientException, message.send)
 
     def test_422_error_unprocessable_entity(self):
-        json_payload = StringIO()
-        json_payload.write('{"Message": "", "ErrorCode": 422}')
+        json_payload = BytesIO()
+        json_payload.write(b'{"Message": "", "ErrorCode": 422}')
         json_payload.seek(0)
 
         message = PMMail(sender='from@example.com', to='to@example.com',
@@ -68,8 +66,8 @@ class PMBatchMailTests(unittest.TestCase):
             ),
         ]
 
-        json_payload = StringIO()
-        json_payload.write('{"Message": "", "ErrorCode": 406}')
+        json_payload = BytesIO()
+        json_payload.write(b'{"Message": "", "ErrorCode": 406}')
         json_payload.seek(0)
 
         batch = PMBatchMail(messages=messages, api_key='test')
@@ -90,8 +88,8 @@ class PMBatchMailTests(unittest.TestCase):
             ),
         ]
 
-        json_payload = StringIO()
-        json_payload.write('{"Message": "", "ErrorCode": 422}')
+        json_payload = BytesIO()
+        json_payload.write(b'{"Message": "", "ErrorCode": 422}')
         json_payload.seek(0)
 
         batch = PMBatchMail(messages=messages, api_key='test')
