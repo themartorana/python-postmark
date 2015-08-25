@@ -1,5 +1,8 @@
+# coding: utf-8
 from django.shortcuts import render_to_response
+
 from forms import EmailForm
+
 
 def test_email(request):
     if request.method == 'GET':
@@ -9,4 +12,3 @@ def test_email(request):
         if form.is_valid():
             form.save()
     return render_to_response('mail.html', {'form': form})
-            
