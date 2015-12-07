@@ -1,12 +1,16 @@
+# coding: utf-8
+import base64
+
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
 from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import EmailMessage, EmailMultiAlternatives
-import base64
 
 from .core import PMMail, PMBatchMail
 
+
 class PMEmailMessage(EmailMessage):
+
     def __init__(self, *args, **kwargs):
         if 'tag' in kwargs:
             self.tag = kwargs['tag']
@@ -22,7 +26,9 @@ class PMEmailMessage(EmailMessage):
 
         super(PMEmailMessage, self).__init__(*args, **kwargs)
 
+
 class PMEmailMultiAlternatives(EmailMultiAlternatives):
+
     def __init__(self, *args, **kwargs):
         if 'tag' in kwargs:
             self.tag = kwargs['tag']
@@ -38,6 +44,7 @@ class PMEmailMultiAlternatives(EmailMultiAlternatives):
 
         super(PMEmailMultiAlternatives, self).__init__(*args, **kwargs)
 
+
 class EmailBackend(BaseEmailBackend):
 
     def __init__(self, api_key=None, default_sender=None, **kwargs):
@@ -47,7 +54,9 @@ class EmailBackend(BaseEmailBackend):
         super(EmailBackend, self).__init__(**kwargs)
         self.api_key = api_key if api_key is not None else getattr(settings, 'POSTMARK_API_KEY', None)
         if self.api_key is None:
-            raise ImproperlyConfigured('POSTMARK API key must be set in Django settings file or passed to backend constructor.')
+            raise ImproperlyConfigured(
+                'POSTMARK API key must be set in Django settings file or passed to backend constructor.'
+            )
         self.default_sender = getattr(settings, 'POSTMARK_SENDER', default_sender)
         self.test_mode = getattr(settings, 'POSTMARK_TEST_MODE', False)
 
@@ -62,7 +71,6 @@ class EmailBackend(BaseEmailBackend):
         if sent:
             return len(email_messages)
         return 0
-
 
     def _build_message(self, message):
         """A helper method to convert a PMEmailMessage to a PMMail"""
@@ -102,17 +110,19 @@ class EmailBackend(BaseEmailBackend):
                     else:
                         attachments.append(item)
 
-        postmark_message = PMMail(api_key=self.api_key,
-                              subject=message.subject,
-                              sender=message.from_email,
-                              to=recipients,
-                              cc=recipients_cc,
-                              bcc=recipients_bcc,
-                              text_body=text_body,
-                              html_body=html_body,
-                              reply_to=reply_to,
-                              custom_headers=custom_headers,
-                              attachments=attachments)
+        postmark_message = PMMail(
+            api_key=self.api_key,
+            subject=message.subject,
+            sender=message.from_email,
+            to=recipients,
+            cc=recipients_cc,
+            bcc=recipients_bcc,
+            text_body=text_body,
+            html_body=html_body,
+            reply_to=reply_to,
+            custom_headers=custom_headers,
+            attachments=attachments,
+        )
 
         postmark_message.tag = getattr(message, 'tag', None)
         postmark_message.track_opens = getattr(message, 'track_opens', False)
@@ -142,4 +152,3 @@ class EmailBackend(BaseEmailBackend):
                 return False
             raise
         return True
-
