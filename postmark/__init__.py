@@ -46,7 +46,7 @@ __doc__ = '''
         By default this setting is False, and if not specified, will 
         be assumed to be False.
         
-        To reoute all Django E-Mail functions like send_mail() and
+        To reroute all Django E-Mail functions like send_mail() and
         mail_admins() through postmark use the following setting:
 
         EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
@@ -62,7 +62,7 @@ __doc__ = '''
             Base Postmark send exception
 
         PMMailUnauthorizedException(PMMailSendException):
-            401: Unathorized sending due to bad API key
+            401: Unauthorized sending due to bad API key
 
         PMMailUnprocessableEntityException(PMMailSendException):
             422: Unprocessable Entity - usually an exception with either the sender
