@@ -12,7 +12,7 @@ __doc__ = '''
     Author: ''' + __author__ + '''
     Last Updated: ''' + __date__ + '''
 
-    USEAGE:
+    USAGE:
         Make sure you have a Postmark account.  Visit
         http://postmarkapp.com to sign up for an account.
         Requires a Postmark API key.
