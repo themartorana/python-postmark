@@ -17,6 +17,9 @@ See [CONTRIBUTORS.md](https://github.com/themartorana/python-postmark/blob/maste
 Changelog
 ----------
 
+Version 0.4.8
+- Handle inactive recipient errors (nicholasserra)
+
 Version 0.4.7
 - Fix base64 encoding in Django API for attachments (thanosd)
 
@@ -85,6 +88,9 @@ class PMMailServerErrorException(PMMailSendException):
 
 class PMMailURLException(PMMailSendException):
     #A URLError was caught - usually has to do with connectivity and the ability to reach the server.  The inner_exception will have the base URLError object.
+
+class PMMailInactiveRecipientException(PMMailSendException):
+    # 406: You tried to send a message to a recipient that has been marked as inactive. If this was a batch operation, the rest of the messages were still sent.
 ```
 
 TODO
