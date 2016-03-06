@@ -1,4 +1,0 @@
-include README
-include distribute_setup.py
-recursive-include docs *
-recursive-exclude test *

@@ -15,7 +15,7 @@ class EmailForm(forms.Form):
         """
         Build and send the email message.
         """
-        send_mail(subject=ugettext_lazy(self.cleaned_data['subject']),
+        send_mail(subject=unicode(ugettext_lazy(self.cleaned_data['subject'])),
                   message=self.cleaned_data['body'], 
                   from_email=self.cleaned_data['sender'],
                   recipient_list=[addr.strip() for addr in self.cleaned_data['to'].split(',')],
