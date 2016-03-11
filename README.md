@@ -66,7 +66,28 @@ EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
 
 But keep in mind that even when using standard Django functions the sender must be registered with postmarkapp.com.
     
+Tornado
+-------
 
+For tornado support of postmark implemented as Mixin. 
+
+Example of usage:
+
+```python
+import tornado.web
+import tornado.options
+from postmark.tornado_mixin import PostmarkMixin
+
+tornado.options.define('postmark_signature', 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx')
+tornado.options.define('postmark_sendemail', 'email@email.com')
+
+class EmailHandler(tornado.web.RequestHandler, PostmarkMixin):
+    def post(self):
+        to = 'test@test.com'
+        body = 'This is test message'
+        subject = 'Test Message'
+        self.send_email(body=body, to=to, subject=subject)
+```
 Exceptions
 -----------
 
