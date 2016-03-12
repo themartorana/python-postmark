@@ -17,6 +17,10 @@ See [CONTRIBUTORS.md](https://github.com/themartorana/python-postmark/blob/maste
 Changelog
 ----------
 
+Version 0.4.9
+- Tornado mixin (tigrus)
+- PMJSONEncoder unicode changes (mattrobenolt)
+
 Version 0.4.8
 - Handle inactive recipient errors (nicholasserra)
 

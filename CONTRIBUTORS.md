@@ -25,5 +25,6 @@ Everyone that made python-postmark awesome
 - Ryan Kuczka (https://github.com/ryankuczka)
 - @thanosd (https://github.com/thanosd)
 - Nicholas Serra (https://github.com/nicholasserra)
+- Nikolay Fominykh (https://github.com/tigrus)
 
 (Did I miss anyone?)

@@ -1,6 +1,11 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.4.9
+-------------
+- Tornado mixin (tigrus)
+- PMJSONEncoder unicode changes (mattrobenolt)
+
 Version 0.4.8
 -------------
 - Handle inactive recipient errors (nicholasserra)
