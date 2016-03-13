@@ -127,6 +127,3 @@ TODO
 - Refactor PMBounceManager Object and improve error handling within it.
 - Add PMBounceManager example to the Django test.
 - Write tests for large percentage of coverage
-- *Fill out the "Usage" section*
-
-
