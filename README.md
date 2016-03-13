@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/themartorana/python-postmark.svg?branch=master)](https://travis-ci.org/themartorana/python-postmark)
+
 python-postmark library for [Postmark](http://postmarkapp.com)
 ================================================================
 
