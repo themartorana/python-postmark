@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/themartorana/python-postmark.svg?branch=master)](https://travis-ci.org/themartorana/python-postmark)
+[![PyPI](https://img.shields.io/pypi/v/python-postmark.svg)](https://pypi.python.org/pypi/python-postmark)
+[![PyPI](https://img.shields.io/pypi/dm/python-postmark.svg)](https://pypi.python.org/pypi/python-postmark)
 
 python-postmark library for [Postmark](http://postmarkapp.com)
 ================================================================
