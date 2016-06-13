@@ -446,7 +446,7 @@ class PMMail(object):
         try:
             #print 'sending request to postmark: %s' % json_message
             result = urlopen(req)
-            jsontxt = result.read().decode()
+            jsontxt = result.read().decode('utf8')
             result.close()
             if result.code == 200:
                 self.message_id = json.loads(jsontxt).get('MessageID', None)
