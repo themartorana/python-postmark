@@ -458,7 +458,7 @@ class PMMail(object):
                 raise PMMailUnauthorizedException('Sending Unauthorized - incorrect API key.', err)
             elif err.code == 422:
                 try:
-                    jsontxt = err.read().decode()
+                    jsontxt = err.read().decode('utf8')
                     jsonobj = json.loads(jsontxt)
                     desc = jsonobj['Message']
                     error_code = jsonobj['ErrorCode']
