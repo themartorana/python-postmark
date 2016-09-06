@@ -43,7 +43,7 @@ to your settings.py file, and when you create a new PMMail object, it will grab 
     
 Using `POSTMARK_TEST_MODE=True` will not actually send the email, but instead dump the JSON packet that would be sent to Postmarkapp.com. By default this setting is False, and if not specified, will be assumed to be False.
 
-To reoute all Django E-Mail functions like `send_mail()` and `mail_admins()` through postmark use the following setting:
+To reroute all Django E-Mail functions like `send_mail()` and `mail_admins()` through postmark use the following setting:
 
 ```python
 EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
@@ -73,6 +73,55 @@ class EmailHandler(tornado.web.RequestHandler, PostmarkMixin):
         subject = 'Test Message'
         self.send_email(body=body, to=to, subject=subject)
 ```
+
+Postmark Templates
+------------------
+Getting an HTML email to look good on most email clients can be tricky. The whole reason to send email as HTML is to make an impression on the reader. If the client renders it badly, its worse than just sending a plain text email.
+
+Postmark understands this and has created a templating system to make it easier to create robust HTML emails. For more information, see: [Special delivery: Postmark templates] (https://postmarkapp.com/blog/special-delivery-postmark-templates)
+
+Using templates in python-postmark is straightforward: 
+
+*. Create a template for your server on the Postmark website.
+
+*. Get the ID for the template from the page on Postmark where the template was made.
+
+*. Make a dict in python that contains the values of the template variables. Postmark calls this the "TemplateModel"
+
+*. Instantiate PMMail with the the appropriate kwargs, including "template_id" and "template_model". NOTE: do not set the "subject" kwarg.
+
+*. Call the send_with_template() method
+
+Here is an example:
+
+```
+from postmark.core import PMMail
+
+template_model = {
+    'firm_name':'Acme Law',
+    'total': '125.43',
+    'date': 'July 10, 2016',
+    'client_name': 'Joe Blow',
+    'invoice_details': [
+        {
+            'description': 'Credit report',
+            'amount': '25.43'
+        },
+        {
+            'description': 'Legal Services',
+            'amount': '100.00'
+        }
+    ],
+    'opening_balance': '2000.00',
+    'closing_balance': "<span class='negative_amount'>1800.00</span>",
+    'notes': 'Thank you for choosing Acme Law.',
+}
+pm = PMMail(to='groucho.marx@gmail.com', sender='harpo.marx@gmail.com',
+            template_id=123456, template_model=template_context)
+    pm.send_with_template()
+```
+
+
 Exceptions
 -----------
 
