@@ -70,9 +70,7 @@ class PMMail(object):
         text_body:      Email message in plain text
         track_opens:    Whether or not to track if emails were opened or not
         custom_headers: A dictionary of key-value pairs of custom headers.
-        attachments:    A list of tuples or email.mime.base.MIMEBase objects
-        attachments:    A list of tuples or email.mime.base.MIMEBase objects
-                        describing attachments.
+        attachments:    A list of tuples or email.mime.base.MIMEBase objects describing attachments.
         template_id:    id of Postmark template. See: https://postmarkapp.com/blog/special-delivery-postmark-templates
         template_model: a dictionary containing the values to be loaded into the template
         '''
@@ -330,7 +328,7 @@ class PMMail(object):
     #####################
 
 
-    def _check_values(self):
+    def _check_values(self, endpoint=None):
         '''
         Make sure all values are of the appropriate
         type and are not missing.
@@ -341,9 +339,10 @@ class PMMail(object):
             raise PMMailMissingValueException('Cannot send an e-mail without a sender (.sender field)')
         elif not self.__to:
             raise PMMailMissingValueException('Cannot send an e-mail without at least one recipient (.to field)')
-        elif bool(self.__template_id) != bool(self.__template_model):
-            raise PMMailMissingValueException('Cannot send an e-mail without a both template_id and template_model set')
-        elif not self.__subject and not self.__template_id:
+        elif endpoint == 'email/withTemplate/' and (not self.__template_id or not self.__template_model):
+            raise PMMailMissingValueException(
+                'Cannot send a template e-mail without a both template_id and template_model set')
+        elif not self.__subject and not endpoint:
             raise PMMailMissingValueException('Cannot send an e-mail without a subject')
         elif self.__template_id and self.__subject:
             raise PMMailMissingValueException('If using Postmark templates, do not set the subject value')
@@ -439,7 +438,7 @@ class PMMail(object):
         endpoint: use this to post to other Postmark API endpoints. If not set, the default is "email"
 
         '''
-        self._check_values()
+        self._check_values(endpoint=endpoint)
 
         # Set up message dictionary
         json_message = self.to_json_message()
@@ -511,8 +510,8 @@ class PMMail(object):
             else:
                 raise PMMailURLException('URLError: The server couldn\'t fufill the request. (See "inner_exception" for details)', err)
 
-    def send_with_template(self):
-        self.send(endpoint='email/withTemplate/')
+    def send_with_template(self, **kwargs):
+        self.send(endpoint='email/withTemplate/', **kwargs)
 
 
 # Simple utility that returns a generator to chunk up a list into equal parts
