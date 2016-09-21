@@ -387,17 +387,32 @@ class PMMail(object):
             attachments = []
             for attachment in self.__attachments:
                 if isinstance(attachment, tuple):
-                    attachments.append({
-                            "Name": attachment[0],
-                            "Content": attachment[1],
-                            "ContentType": attachment[2],
-                            })
+                    file_item = {
+                        "Name": attachment[0],
+                        "Content": attachment[1],
+                        "ContentType": attachment[2],
+                    }
+                    # If need add Content-ID header:
+                    if len(attachment) >= 4 and attachment[3]:
+                        file_item["ContentID"] = attachment[3]
                 elif isinstance(attachment, MIMEBase):
-                    attachments.append({
-                            "Name": attachment.get_filename(),
-                            "Content": attachment.get_payload(),
-                            "ContentType": attachment.get_content_type(),
-                            })
+                    file_item = {
+                        "Name": attachment.get_filename(),
+                        "Content": attachment.get_payload(),
+                        "ContentType": attachment.get_content_type(),
+                    }
+                    content_id = attachment.get("Content-ID")
+                    if content_id:
+                        # Because postmarkapp api required clear value. Not enclosed in angle brackets:
+                        if content_id.startswith("<") and content_id.endswith(">"):
+                            content_id = content_id[1:-1]
+                        # Postmarkapp will mark attachment as "inline" only if "ContentID" field starts with "cid":
+                        if (attachment.get("Content-Disposition") or "").startswith("inline"):
+                            content_id = "cid:%s" % content_id
+                        file_item["ContentID"] = content_id
+                else:
+                    continue
+                attachments.append(file_item)
             json_message['Attachments'] = attachments
 
         return json_message

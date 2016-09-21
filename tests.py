@@ -1,6 +1,6 @@
 import sys
 import unittest
-
+from email.mime.image import MIMEImage
 
 from io import BytesIO
 
@@ -51,6 +51,32 @@ class PMMailTests(unittest.TestCase):
         with mock.patch('postmark.core.urlopen', side_effect=HTTPError('',
             500, '', {}, None)):
             self.assertRaises(PMMailServerErrorException, message.send)
+
+    def test_inline_attachments(self):
+        image = MIMEImage('image_file', 'png', name='image.png')
+        image_with_id = MIMEImage('inline_image_file', 'png', name='image_with_id.png')
+        image_with_id.add_header('Content-ID', '<image2@postmarkapp.com>')
+        inline_image = MIMEImage('inline_image_file', 'png', name='inline_image.png')
+        inline_image.add_header('Content-ID', '<image3@postmarkapp.com>')
+        inline_image.add_header('Content-Disposition', 'inline', filename='inline_image.png')
+
+        json_message = PMMail(
+            sender='from@example.com', to='to@example.com', subject='Subject', text_body='Body', api_key='test',
+            attachments=[
+                ('TextFile', 'content', 'text/plain'),
+                ('InlineImage', 'image_content', 'image/png', 'cid:image@postmarkapp.com'),
+                image,
+                image_with_id,
+                inline_image,
+            ]
+        ).to_json_message()
+        assert json_message['Attachments'] == [
+            {'Name': 'TextFile', 'Content': 'content', 'ContentType': 'text/plain'},
+            {'Name': 'InlineImage', 'Content': 'image_content', 'ContentType': 'image/png', 'ContentID': 'cid:image@postmarkapp.com'},
+            {'Name': 'image.png', 'Content': 'aW1hZ2VfZmlsZQ==\n', 'ContentType': 'image/png'},
+            {'Name': 'image_with_id.png', 'Content': 'aW5saW5lX2ltYWdlX2ZpbGU=\n', 'ContentType': 'image/png', 'ContentID': 'image2@postmarkapp.com'},
+            {'Name': 'inline_image.png', 'Content': 'aW5saW5lX2ltYWdlX2ZpbGU=\n', 'ContentType': 'image/png', 'ContentID': 'cid:image3@postmarkapp.com'},
+        ]
 
 
 class PMBatchMailTests(unittest.TestCase):
