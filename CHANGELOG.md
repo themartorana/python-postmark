@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.4.10
+--------------
+- Added inline images support (#47)
+
 Version 0.4.9
 -------------
 - Tornado mixin (tigrus)

@@ -21,6 +21,9 @@ See [CONTRIBUTORS.md](https://github.com/themartorana/python-postmark/blob/maste
 Changelog
 ----------
 
+Version 0.4.10
+- Added inline images support (issue #47, PR #64)
+
 Version 0.4.9
 - Tornado mixin (tigrus)
 - PMJSONEncoder unicode changes (mattrobenolt)
@@ -36,11 +39,6 @@ Version 0.4.6
 
 Version 0.4.5
 - Fix for Python 3 support (issue #42, PR #43) (mflaxman)
-
-Version 0.4.4
-- Minor code cleanup (Stranger6667)
-- Fix for Django 1.5+ ugettext_lazy strings being improperly converted (#11, #41) (justinabrahms, rduffield)
-- Demo brought up to Django 1.6 (catskul)
 
 *[See full changelog](https://github.com/themartorana/python-postmark/blob/master/CHANGELOG.md)*
 
