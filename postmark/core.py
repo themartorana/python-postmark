@@ -328,7 +328,7 @@ class PMMail(object):
     #####################
 
 
-    def _check_values(self, endpoint=None):
+    def _check_values(self, endpoint='email'):
         '''
         Make sure all values are of the appropriate
         type and are not missing.
@@ -342,7 +342,7 @@ class PMMail(object):
         elif endpoint == 'email/withTemplate/' and (not self.__template_id or not self.__template_model):
             raise PMMailMissingValueException(
                 'Cannot send a template e-mail without a both template_id and template_model set')
-        elif not self.__subject and not endpoint:
+        elif not self.__subject and endpoint == 'email':
             raise PMMailMissingValueException('Cannot send an e-mail without a subject')
         elif self.__template_id and self.__subject:
             raise PMMailMissingValueException('If using Postmark templates, do not set the subject value')
@@ -429,13 +429,13 @@ class PMMail(object):
 
         return json_message
 
-    def send(self, endpoint=None, test=None):
+    def send(self, endpoint='email', test=None):
         '''
         Send the email through the Postmark system.
         Pass test=True to just print out the resulting
         JSON message being sent to Postmark
 
-        endpoint: use this to post to other Postmark API endpoints. If not set, the default is "email"
+        endpoint: the name of the Postmark API endpoints
 
         '''
         self._check_values(endpoint=endpoint)
@@ -461,7 +461,6 @@ class PMMail(object):
             return
 
         # Set up the url Request
-        endpoint = endpoint or 'email'
         req = Request(
             __POSTMARK_URL__ + endpoint,
             json.dumps(json_message, cls=PMJSONEncoder).encode('utf8'),
