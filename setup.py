@@ -1,8 +1,11 @@
 from distutils.core import setup
 
+import postmark
+
+
 setup(
     name="python-postmark",
-    version="0.4.9",
+    version=postmark.__version__,
     packages=['postmark'],
     author="Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)",
     license='BSD',
