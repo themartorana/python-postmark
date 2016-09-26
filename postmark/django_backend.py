@@ -98,7 +98,13 @@ class EmailBackend(BaseEmailBackend):
                 for item in message.attachments:
                     if isinstance(item, tuple):
                         (f, content, m) = item
-                        attachments.append((f, base64.encodestring(content), m))
+                        content = base64.b64encode(content)
+                        # b64decode returns bytes on Python 3. PMMail needs a
+                        # str (for JSON serialization). Convert on Python 3
+                        # only to avoid a useless performance hit on Python 2.
+                        if not isinstance(content, str):
+                            content = content.decode()
+                        attachments.append((f, content, m))
                     else:
                         attachments.append(item)
 
