@@ -4,6 +4,7 @@ CHANGELOG for python-postmark
 Version 0.4.10
 --------------
 - Added inline images support (#47)
+- Fix for attachments in Python 3 (issue #66, PR #67)
 
 Version 0.4.9
 -------------
