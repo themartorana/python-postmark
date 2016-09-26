@@ -63,9 +63,9 @@ class PMMailTests(unittest.TestCase):
         expected = [
             {'Name': 'TextFile', 'Content': 'content', 'ContentType': 'text/plain'},
             {'Name': 'InlineImage', 'Content': 'image_content', 'ContentType': 'image/png', 'ContentID': 'cid:image@postmarkapp.com'},
-            {'Name': 'image.png', 'Content': 'aW1hZ2VfZmlsZQ==\n', 'ContentType': 'image/png'},
-            {'Name': 'image_with_id.png', 'Content': 'aW5saW5lX2ltYWdlX2ZpbGU=\n', 'ContentType': 'image/png', 'ContentID': 'image2@postmarkapp.com'},
-            {'Name': 'inline_image.png', 'Content': 'aW5saW5lX2ltYWdlX2ZpbGU=\n', 'ContentType': 'image/png', 'ContentID': 'cid:image3@postmarkapp.com'},
+            {'Name': 'image.png', 'Content': 'aW1hZ2VfZmlsZQ==', 'ContentType': 'image/png'},
+            {'Name': 'image_with_id.png', 'Content': 'aW5saW5lX2ltYWdlX2ZpbGU=', 'ContentType': 'image/png', 'ContentID': 'image2@postmarkapp.com'},
+            {'Name': 'inline_image.png', 'Content': 'aW5saW5lX2ltYWdlX2ZpbGU=', 'ContentType': 'image/png', 'ContentID': 'cid:image3@postmarkapp.com'},
         ]
         json_message = PMMail(
             sender='from@example.com', to='to@example.com', subject='Subject', text_body='Body', api_key='test',
@@ -78,8 +78,9 @@ class PMMailTests(unittest.TestCase):
             ]
         ).to_json_message()
         assert len(json_message['Attachments']) == len(expected)
-        for item in expected:
-            assert item in json_message['Attachments']
+        for orig, attachment in zip(expected, json_message['Attachments']):
+            for k, v in orig.items():
+                assert orig[k] == attachment[k].rstrip()
 
 
 class PMBatchMailTests(unittest.TestCase):
