@@ -85,7 +85,7 @@ class EmailBackend(BaseEmailBackend):
             text_body = None
             html_body = message.body
 
-        reply_to = None
+        reply_to = ','.join(message.reply_to)
         custom_headers = {}
         if message.extra_headers and isinstance(message.extra_headers, dict):
             if 'Reply-To' in message.extra_headers:
