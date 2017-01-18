@@ -4,7 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 import base64
 
-from .core import PMMail, PMBatchMail
+from postmark.core import PMMail, PMBatchMail
 
 class PMEmailMessage(EmailMessage):
     def __init__(self, *args, **kwargs):

@@ -1,11 +1,7 @@
-__version__         = '0.4.11'
-__author__          = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)"
-__date__            = '2010-April-14'
-__url__             = 'http://postmarkapp.com'
-__copyright__       = "(C) 2009-2014 David Martorana, Wildbit LLC, Python Software Foundation."
-
 #
 # Imports (JSON library based on import try)
+
+from postmark import __version__
 
 try:
     from email.mime.base import MIMEBase
@@ -22,7 +18,6 @@ else:
     from http.client import HTTPConnection
     from urllib.parse import urlencode
 
-import collections
 from contextlib import closing
 
 try:
