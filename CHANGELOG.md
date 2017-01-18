@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.4.11
+--------------
+- Account for EmailMessage.reply_to (#68)
+
 Version 0.4.10
 --------------
 - Added inline images support (#47)
