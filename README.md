@@ -20,29 +20,7 @@ See [CONTRIBUTORS.md](https://github.com/themartorana/python-postmark/blob/maste
 
 Changelog
 ----------
-
-Version 0.4.10
-- Added inline images support (issue #47, PR #64)
-- Fix for attachments in Python 3 (issue #66, PR #67)
-
-Version 0.4.9
-- Tornado mixin (tigrus)
-- PMJSONEncoder unicode changes (mattrobenolt)
-
-Version 0.4.8
-- Handle inactive recipient errors (nicholasserra)
-
-Version 0.4.7
-- Fix base64 encoding in Django API for attachments (thanosd)
-
-Version 0.4.6
-- Fix for using content subtype in Django backend for HTML email (ryankuczka)
-
-Version 0.4.5
-- Fix for Python 3 support (issue #42, PR #43) (mflaxman)
-
 *[See full changelog](https://github.com/themartorana/python-postmark/blob/master/CHANGELOG.md)*
-
 
 Usage
 -----
