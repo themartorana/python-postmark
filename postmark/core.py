@@ -1,5 +1,6 @@
 #
 # Imports (JSON library based on import try)
+import sys
 
 from postmark import __version__
 
@@ -7,11 +8,11 @@ try:
     from email.mime.base import MIMEBase
 except ImportError as e:
     from email import MIMEBase
-    from httplib import HTTPConnection
-    from urllib import urlencode
-import sys
+
 if sys.version_info[0] < 3:
     from urllib2 import Request, urlopen, HTTPError, URLError
+    from httplib import HTTPConnection
+    from urllib import urlencode
 else:
     from urllib.request import Request, urlopen
     from urllib.error import HTTPError, URLError
