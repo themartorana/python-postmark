@@ -5,15 +5,18 @@ from email.mime.image import MIMEImage
 from io import BytesIO
 
 if sys.version_info[0] < 3:
+    from StringIO import StringIO
     from urllib2 import HTTPError
 else:
+    from io import StringIO
     from urllib.error import HTTPError
 
 import mock
 
 from postmark import (
     PMBatchMail, PMMail, PMMailInactiveRecipientException,
-    PMMailUnprocessableEntityException, PMMailServerErrorException
+    PMMailUnprocessableEntityException, PMMailServerErrorException,
+    PMBounceManager
 )
 
 from django.conf import settings
@@ -145,6 +148,15 @@ class PMBatchMailTests(unittest.TestCase):
         with mock.patch('postmark.core.urlopen', side_effect=HTTPError('',
             500, '', {}, None)):
             self.assertRaises(PMMailServerErrorException, batch.send)
+
+
+class PMBounceManagerTests(unittest.TestCase):
+    def test_activate(self):
+        bounce = PMBounceManager(api_key='test')
+
+        with mock.patch('postmark.core.HTTPConnection.getresponse') as mock_response:
+            mock_response.return_value = StringIO('{"test": "test"}')
+            self.assertEquals(bounce.activate(1), {'test': 'test'})
 
 
 if __name__ == '__main__':
