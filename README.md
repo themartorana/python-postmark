@@ -117,7 +117,7 @@ template_model = {
     'notes': 'Thank you for choosing Acme Law.',
 }
 pm = PMMail(to='groucho.marx@gmail.com', sender='harpo.marx@gmail.com',
-            template_id=123456, template_model=template_context)
+            template_id=123456, template_model=template_model)
     pm.send_with_template()
 ```
 
