@@ -64,7 +64,7 @@ class PMMail(object):
         bcc:            Who to blind copy the email to, in either
                         "name@email.com" or "First Last <name@email.com>" format
                         Can be multiple values separated by commas (limit 20)
-        subject:        Subject of the email. ***DO NOT SET if using Postmark templates
+        subject:        Subject of the email, ignored if using Postmark templates
         tag:            Use for adding categorizations to your email
         html_body:      Email message in HTML
         text_body:      Email message in plain text
@@ -328,7 +328,7 @@ class PMMail(object):
     #####################
 
 
-    def _check_values(self, endpoint='email'):
+    def _check_values(self):
         '''
         Make sure all values are of the appropriate
         type and are not missing.
@@ -339,13 +339,11 @@ class PMMail(object):
             raise PMMailMissingValueException('Cannot send an e-mail without a sender (.sender field)')
         elif not self.__to:
             raise PMMailMissingValueException('Cannot send an e-mail without at least one recipient (.to field)')
-        elif endpoint == 'email/withTemplate/' and (not self.__template_id or not self.__template_model):
+        elif (self.__template_id or self.__template_model) and not all([self.__template_id, self.__template_model]):
             raise PMMailMissingValueException(
                 'Cannot send a template e-mail without a both template_id and template_model set')
-        elif not self.__subject and endpoint == 'email':
+        elif not any([self.__template_id, self.__template_model, self.__subject]):
             raise PMMailMissingValueException('Cannot send an e-mail without a subject')
-        elif self.__template_id and self.__subject:
-            raise PMMailMissingValueException('If using Postmark templates, do not set the subject value')
         elif not self.__html_body and not self.__text_body and not self.__template_id:
             raise PMMailMissingValueException('Cannot send an e-mail without either an HTML or text version of your e-mail body')
         if self.__track_opens and not self.__html_body:
@@ -429,16 +427,13 @@ class PMMail(object):
 
         return json_message
 
-    def send(self, endpoint='email', test=None):
+    def send(self, test=None):
         '''
         Send the email through the Postmark system.
         Pass test=True to just print out the resulting
         JSON message being sent to Postmark
-
-        endpoint: the name of the Postmark API endpoints
-
         '''
-        self._check_values(endpoint=endpoint)
+        self._check_values()
 
         # Set up message dictionary
         json_message = self.to_json_message()
@@ -460,9 +455,14 @@ class PMMail(object):
             print('JSON message is:\n%s' % json.dumps(json_message, cls=PMJSONEncoder))
             return
 
+        if self.__template_id:
+            endpoint_url = __POSTMARK_URL__ + 'email/withTemplate/'
+        else:
+            endpoint_url = __POSTMARK_URL__ + 'email'
+
         # Set up the url Request
         req = Request(
-            __POSTMARK_URL__ + endpoint,
+            endpoint_url,
             json.dumps(json_message, cls=PMJSONEncoder).encode('utf8'),
             {
                 'Accept': 'application/json',
@@ -508,9 +508,6 @@ class PMMail(object):
                 raise PMMailURLException('URLError: %d: The server couldn\'t fufill the request. (See "inner_exception" for details)' % err.code, err)
             else:
                 raise PMMailURLException('URLError: The server couldn\'t fufill the request. (See "inner_exception" for details)', err)
-
-    def send_with_template(self, **kwargs):
-        self.send(endpoint='email/withTemplate/', **kwargs)
 
 
 # Simple utility that returns a generator to chunk up a list into equal parts
