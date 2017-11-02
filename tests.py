@@ -16,7 +16,7 @@ import mock
 from postmark import (
     PMBatchMail, PMMail, PMMailInactiveRecipientException,
     PMMailUnprocessableEntityException, PMMailServerErrorException,
-    PMBounceManager
+    PMMailMissingValueException, PMBounceManager
 )
 
 from django.conf import settings
@@ -54,6 +54,54 @@ class PMMailTests(unittest.TestCase):
         with mock.patch('postmark.core.urlopen', side_effect=HTTPError('',
             500, '', {}, None)):
             self.assertRaises(PMMailServerErrorException, message.send)
+
+    def assert_missing_value_exception(self, message_func, error_message):
+        with self.assertRaises(PMMailMissingValueException) as cm:
+            message_func()
+        self.assertEqual(error_message, cm.exception.parameter)
+
+    def test_send_with_template(self):
+        # Confirm send() still works as before send_with_template() was added
+        message = PMMail(sender='from@example.com', to='to@example.com',
+            subject='Subject', text_body='Body', api_key='test')
+
+        with mock.patch('postmark.core.urlopen', side_effect=HTTPError('',
+            200, '', {}, None)):
+            self.assertTrue(message.send)
+
+        # No subject should raise exception when using send()
+        message = PMMail(sender='from@example.com', to='to@example.com',
+                         text_body='Body', api_key='test')
+        self.assert_missing_value_exception(
+            message.send,
+            'Cannot send an e-mail without a subject'
+        )
+
+        # Test new _check_values()
+        # Try sending with template without a template ID or template model
+        for kwargs in [{'subject': 'Subject', 'text_body': 'Body'},
+                       {'template_id': 1},
+                       {'template_model': {'junk': 'more junk'}}]:
+            message = PMMail(api_key='test', sender='from@example.com', to='to@example.com', **kwargs)
+            self.assert_missing_value_exception(
+                message.send_with_template,
+                'Cannot send a template e-mail without a both template_id and template_model set'
+            )
+
+        # Both template_id and template_model are set, so send_with_template should work.
+        message = PMMail(api_key='test', sender='from@example.com', to='to@example.com',
+                         template_id=1, template_model={'junk': 'more junk'})
+        with mock.patch('postmark.core.urlopen', side_effect=HTTPError('',
+            200, '', {}, None)):
+            self.assertTrue(message.send_with_template)
+
+        # Setting a subject with a template should raise an error
+        message = PMMail(api_key='test', sender='from@example.com', to='to@example.com',
+                         template_id=1, template_model={'junk': 'more junk'}, subject='Subject')
+        self.assert_missing_value_exception(
+            message.send_with_template,
+            'If using Postmark templates, do not set the subject value'
+        )
 
     def test_inline_attachments(self):
         image = MIMEImage(b'image_file', 'png', name='image.png')
