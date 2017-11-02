@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.5.0
+--------------
+- Postmark templates support (PR #63)
+
 Version 0.4.11
 --------------
 - Account for EmailMessage.reply_to (#68)
