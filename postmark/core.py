@@ -90,6 +90,7 @@ class PMMail(object):
         self.__attachments = []
         self.__message_id = None
         #self.__multipart = False
+        self.__metadata = {}
         self.__template_id = None
         self.__template_model = None
 
@@ -108,6 +109,7 @@ class PMMail(object):
             'custom_headers',
             'attachments',
             #'multipart',
+            'metadata',
             'template_id',
             'template_model'
         )
@@ -150,6 +152,18 @@ class PMMail(object):
             setattr(self, '_PMMail__custom_headers', value)
         else:
             raise TypeError('Custom headers must be a dictionary of key-value pairs')
+
+    def _set_metadata(self, value):
+        '''
+        A special set function to ensure
+        we're setting with a dictionary
+        '''
+        if value is None:
+            setattr(self, '_PMMail__metadata', {})
+        elif isinstance(value, dict):
+            setattr(self, '_PMMail__metadata', value)
+        else:
+            raise TypeError('Metadata must be a dictionary of key-value pairs')
 
     def _set_attachments(self, value):
         '''
@@ -297,6 +311,15 @@ class PMMail(object):
     #     'The API Key for one of your servers on Postmark'
     # )
 
+    metadata = property(
+        lambda self: self.__metadata,
+        _set_metadata,
+        lambda self: setattr(self, '_PMMail_metadata', {}),
+        '''
+        Custom metadata key/value pairs returned by webhooks.
+        '''
+    )
+
     message_id = property(
         lambda self: self.__message_id,
         lambda self, value: setattr(self, '_PMMail__message_id', value),
@@ -392,6 +415,9 @@ class PMMail(object):
                     'Value': value
                 })
             json_message['Headers'] = cust_headers
+
+        if len(self.__metadata) > 0:
+            json_message['Metadata'] = self.__metadata
 
         if len(self.__attachments) > 0:
             attachments = []
