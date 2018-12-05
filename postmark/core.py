@@ -118,9 +118,9 @@ class PMMail(object):
         for key in kwargs:
             if key in acceptable_keys:
                 if key == 'recipient':
-                    setattr(self, '_PMMail__to', kwargs[key])
+                    setattr(self, 'to', kwargs[key])
                 else:
-                    setattr(self, '_PMMail__%s' % key, kwargs[key])
+                    setattr(self, key, kwargs[key])
 
         # Set up the user-agent
         self.__user_agent = 'Python/%s (python-postmark library version %s)' % ('_'.join([str(var) for var in sys.version_info]), __version__)
@@ -323,6 +323,18 @@ class PMMail(object):
         '''
         Custom metadata key/value pairs returned by webhooks.
         '''
+    )
+
+    template_id = property(
+        lambda self: self.__template_id,
+        lambda self, value: setattr(self, '_PMMail__template_id', value),
+        lambda self: setattr(self, '_PMMail__template_id', {}),
+    )
+
+    template_model = property(
+        lambda self: self.__template_model,
+        lambda self, value: setattr(self, '_PMMail__template_model', value),
+        lambda self: setattr(self, '_PMMail__template_model', {}),
     )
 
     message_id = property(
