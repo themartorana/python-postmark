@@ -124,6 +124,17 @@ class PMMailTests(unittest.TestCase):
             for k, v in orig.items():
                 assert orig[k] == attachment[k].rstrip()
 
+    def test_send_metadata(self):
+        message = PMMail(api_key='test', sender='from@example.com', to='to@example.com',
+                         subject='test', text_body='test', metadata={'test': 'test'})
+        with mock.patch('postmark.core.urlopen', side_effect=HTTPError('',
+            200, '', {}, None)):
+            message.send()
+
+    def test_send_metadata_invalid_format(self):
+        self.assertRaises(TypeError, PMMail, api_key='test', sender='from@example.com', to='to@example.com',
+                         subject='test', text_body='test', metadata={'test': {}})
+
 
 class PMBatchMailTests(unittest.TestCase):
     def test_406_error_inactive_recipient(self):
