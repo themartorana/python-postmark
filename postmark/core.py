@@ -71,6 +71,7 @@ class PMMail(object):
         track_opens:    Whether or not to track if emails were opened or not
         custom_headers: A dictionary of key-value pairs of custom headers.
         attachments:    A list of tuples or email.mime.base.MIMEBase objects describing attachments.
+        metadata:       A dictionary of key-value pairs of custom metadata. Keys and values can only be strings or ints.
         template_id:    id of Postmark template. See: https://postmarkapp.com/blog/special-delivery-postmark-templates
         template_model: a dictionary containing the values to be loaded into the template
         '''
@@ -161,6 +162,10 @@ class PMMail(object):
         if value is None:
             setattr(self, '_PMMail__metadata', {})
         elif isinstance(value, dict):
+            for k, v in value.items():
+                if (not isinstance(k, str) and not isinstance(k, int)) \
+                    or (not isinstance(v, str) and not isinstance(v, int)):
+                    raise TypeError('Metadata keys and values can only be strings or integers')
             setattr(self, '_PMMail__metadata', value)
         else:
             raise TypeError('Metadata must be a dictionary of key-value pairs')
