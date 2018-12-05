@@ -1,9 +1,17 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.5.1
+--------------
+- Postmark metadata support (PR #75)
+
 Version 0.5.0
 --------------
 - Postmark templates support (PR #63)
+
+Version 0.4.12
+--------------
+- EmailMessage.reply_to fix and housekeeping
 
 Version 0.4.11
 --------------
