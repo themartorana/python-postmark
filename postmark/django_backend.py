@@ -137,7 +137,7 @@ class EmailBackend(BaseEmailBackend):
                 return False
         else:
             pm_messages = list(map(self._build_message, messages))
-            pm_messages = [m for m in pm_messages if not m]
+            pm_messages = [m for m in pm_messages if m]
             if len(pm_messages) == 0:
                 # If after filtering, there aren't any messages
                 # to send, bail.
