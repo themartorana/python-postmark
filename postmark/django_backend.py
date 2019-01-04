@@ -6,6 +6,7 @@ import base64
 
 from postmark.core import PMMail, PMBatchMail
 
+
 class PMEmailMessage(EmailMessage):
     def __init__(self, *args, **kwargs):
         if 'tag' in kwargs:
@@ -22,6 +23,7 @@ class PMEmailMessage(EmailMessage):
 
         super(PMEmailMessage, self).__init__(*args, **kwargs)
 
+
 class PMEmailMultiAlternatives(EmailMultiAlternatives):
     def __init__(self, *args, **kwargs):
         if 'tag' in kwargs:
@@ -37,6 +39,7 @@ class PMEmailMultiAlternatives(EmailMultiAlternatives):
             self.track_opens = getattr(settings, 'POSTMARK_TRACK_OPENS', False)
 
         super(PMEmailMultiAlternatives, self).__init__(*args, **kwargs)
+
 
 class EmailBackend(BaseEmailBackend):
 
@@ -63,7 +66,6 @@ class EmailBackend(BaseEmailBackend):
             return len(email_messages)
         return 0
 
-
     def _build_message(self, message):
         """A helper method to convert a PMEmailMessage to a PMMail"""
         if not message.recipients():
@@ -77,7 +79,7 @@ class EmailBackend(BaseEmailBackend):
         if isinstance(message, EmailMultiAlternatives):
             for alt in message.alternatives:
                 if alt[1] == "text/html":
-                    html_body=alt[0]
+                    html_body = alt[0]
                     break
 
         elif getattr(message, 'content_subtype', None) == 'html':
@@ -109,16 +111,16 @@ class EmailBackend(BaseEmailBackend):
                         attachments.append(item)
 
         postmark_message = PMMail(api_key=self.api_key,
-                              subject=message.subject,
-                              sender=message.from_email,
-                              to=recipients,
-                              cc=recipients_cc,
-                              bcc=recipients_bcc,
-                              text_body=text_body,
-                              html_body=html_body,
-                              reply_to=reply_to,
-                              custom_headers=custom_headers,
-                              attachments=attachments)
+                                  subject=message.subject,
+                                  sender=message.from_email,
+                                  to=recipients,
+                                  cc=recipients_cc,
+                                  bcc=recipients_bcc,
+                                  text_body=text_body,
+                                  html_body=html_body,
+                                  reply_to=reply_to,
+                                  custom_headers=custom_headers,
+                                  attachments=attachments)
 
         postmark_message.tag = getattr(message, 'tag', None)
         postmark_message.track_opens = getattr(message, 'track_opens', False)
@@ -135,7 +137,7 @@ class EmailBackend(BaseEmailBackend):
                 return False
         else:
             pm_messages = list(map(self._build_message, messages))
-            pm_messages = [m for m in pm_messages if m != False]
+            pm_messages = [m for m in pm_messages if m]
             if len(pm_messages) == 0:
                 # If after filtering, there aren't any messages
                 # to send, bail.
@@ -148,4 +150,3 @@ class EmailBackend(BaseEmailBackend):
                 return False
             raise
         return True
-
