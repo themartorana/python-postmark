@@ -230,7 +230,7 @@ class EmailBackendTests(TestCase):
 
         with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)) as transport:
             message.send()
-            data = json.loads(transport.call_args[0][0].data)
+            data = json.loads(transport.call_args[0][0].data.decode('utf-8'))
             self.assertEqual('hello there', data['TextBody'])
             self.assertEqual('<b>hello</b> there', data['HtmlBody'])
 
@@ -244,7 +244,7 @@ class EmailBackendTests(TestCase):
 
         with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)) as transport:
             message.send()
-            data = json.loads(transport.call_args[0][0].data)
+            data = json.loads(transport.call_args[0][0].data.decode('utf-8'))
             self.assertEqual('<b>hello</b> there', data['HtmlBody'])
             self.assertFalse('TextBody' in data)
 
@@ -263,7 +263,7 @@ class EmailBackendTests(TestCase):
 
         with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)) as transport:
             message.send()
-            data = json.loads(transport.call_args[0][0].data)
+            data = json.loads(transport.call_args[0][0].data.decode('utf-8'))
             self.assertFalse('TextBody' in data)
             self.assertEqual('<b>hello</b> there', data['HtmlBody'])
 
