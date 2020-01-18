@@ -82,7 +82,7 @@ class EmailBackend(BaseEmailBackend):
                     html_body = alt[0]
                     break
 
-        elif getattr(message, 'content_subtype', None) == 'html':
+        if getattr(message, 'content_subtype', None) == 'html':
             # Don't send html content as plain text
             text_body = None
             html_body = message.body

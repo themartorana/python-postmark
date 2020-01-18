@@ -1,8 +1,14 @@
+import json
 import sys
 import unittest
 from email.mime.image import MIMEImage
 
 from io import BytesIO
+
+from django.core.mail import EmailMultiAlternatives, EmailMessage
+from django.test import override_settings, TestCase
+
+from postmark.django_backend import EmailBackend
 
 if sys.version_info[0] < 3:
     from StringIO import StringIO
@@ -206,7 +212,60 @@ class PMBounceManagerTests(unittest.TestCase):
 
         with mock.patch('postmark.core.HTTPConnection.getresponse') as mock_response:
             mock_response.return_value = StringIO('{"test": "test"}')
-            self.assertEquals(bounce.activate(1), {'test': 'test'})
+            self.assertEqual(bounce.activate(1), {'test': 'test'})
+
+
+class EmailBackendTests(TestCase):
+
+    def setUp(self):
+        self.backend = EmailBackend(api_key='dummy')
+
+    def test_send_multi_alternative_html_email(self):
+        # build a message and send it
+        message = EmailMultiAlternatives(
+            connection=self.backend,
+            from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='hello there'
+        )
+        message.attach_alternative('<b>hello</b> there', 'text/html')
+
+        with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)) as transport:
+            message.send()
+            data = json.loads(transport.call_args[0][0].data.decode('utf-8'))
+            self.assertEqual('hello there', data['TextBody'])
+            self.assertEqual('<b>hello</b> there', data['HtmlBody'])
+
+    def test_send_content_subtype_email(self):
+        # build a message and send it
+        message = EmailMessage(
+            connection=self.backend,
+            from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='<b>hello</b> there'
+        )
+        message.content_subtype = 'html'
+
+        with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)) as transport:
+            message.send()
+            data = json.loads(transport.call_args[0][0].data.decode('utf-8'))
+            self.assertEqual('<b>hello</b> there', data['HtmlBody'])
+            self.assertFalse('TextBody' in data)
+
+    def test_send_multi_alternative_with_subtype_html_email(self):
+        """
+        Client uses EmailMultiAlternative but instead of specifying a html alternative they insert html content
+        into the main message and specify message_subtype
+        :return:
+        """
+        message = EmailMultiAlternatives(
+            connection=self.backend,
+            from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='<b>hello</b> there'
+        )
+        # NO alternatives attached.  subtype specified instead
+        message.content_subtype = 'html'
+
+        with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)) as transport:
+            message.send()
+            data = json.loads(transport.call_args[0][0].data.decode('utf-8'))
+            self.assertFalse('TextBody' in data)
+            self.assertEqual('<b>hello</b> there', data['HtmlBody'])
 
 
 if __name__ == '__main__':
@@ -215,6 +274,7 @@ if __name__ == '__main__':
             DATABASES={
                 'default': {
                     'ENGINE': 'django.db.backends.sqlite3',
+                    'NAME': ':memory:'
                 }
             },
             INSTALLED_APPS=[

@@ -3,7 +3,8 @@ from django.conf.urls import *
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
+import views
 
-urlpatterns = patterns('',
-    (r'', 'views.test_email'),
-)
+urlpatterns = [
+    url(r'', views.test_email),
+]
