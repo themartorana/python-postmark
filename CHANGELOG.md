@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.5.2
+--------------
+- EmailMultiAlternatives content_subtype fix (PR #82)
+
 Version 0.5.1
 --------------
 - Postmark metadata support (PR #75)
