@@ -84,6 +84,22 @@ class PMMailTests(unittest.TestCase):
             'Cannot send an e-mail without a subject'
         )
 
+    def test_missing_recipient_fields(self):
+        # No subject should raise exception when using send()
+        message = PMMail(sender='from@example.com', subject='test',
+                         text_body='Body', api_key='test')
+        self.assert_missing_value_exception(
+            message.send,
+            'Cannot send an e-mail without at least one recipient (.to field or .bcc field)'
+        )
+
+    def test_missing_to_field_but_populated_bcc_field(self):
+        # No subject should raise exception when using send()
+        message = PMMail(sender='from@example.com', subject='test', bcc='to@example.com',
+                         text_body='Body', api_key='test')
+        with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)):
+            message.send()
+
     def test_check_values_bad_template_data(self):
         # Try sending with template ID only
         message = PMMail(api_key='test', sender='from@example.com', to='to@example.com', template_id=1)
@@ -146,7 +162,7 @@ class PMBatchMailTests(unittest.TestCase):
     def test_406_error_inactive_recipient(self):
         messages = [
             PMMail(
-                sender='from@example.com', to='to@example.com', 
+                sender='from@example.com', to='to@example.com',
                 subject='Subject', text_body='Body', api_key='test'
             ),
             PMMail(
