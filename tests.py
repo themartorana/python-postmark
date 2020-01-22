@@ -85,7 +85,7 @@ class PMMailTests(unittest.TestCase):
         )
 
     def test_missing_recipient_fields(self):
-        # No subject should raise exception when using send()
+        # No recipient should raise exception when using send()
         message = PMMail(sender='from@example.com', subject='test',
                          text_body='Body', api_key='test')
         self.assert_missing_value_exception(
@@ -94,7 +94,7 @@ class PMMailTests(unittest.TestCase):
         )
 
     def test_missing_to_field_but_populated_bcc_field(self):
-        # No subject should raise exception when using send()
+        # No to field but populated bcc field should not raise exception when using send()
         message = PMMail(sender='from@example.com', subject='test', bcc='to@example.com',
                          text_body='Body', api_key='test')
         with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)):
