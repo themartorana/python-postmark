@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.5.3
+--------------
+- Allow empty "to" field if "bcc" is populated (PR #83)
+
 Version 0.5.2
 --------------
 - EmailMultiAlternatives content_subtype fix (PR #82)
