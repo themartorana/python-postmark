@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.5.4
+--------------
+- Fix for sending batch emails with templates (PR #87)
+
 Version 0.5.3
 --------------
 - Allow empty "to" field if "bcc" is populated (PR #83)
