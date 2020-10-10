@@ -10,3 +10,5 @@ build/
 env/
 .pypirc
 MANIFEST
+venv
+.python-version

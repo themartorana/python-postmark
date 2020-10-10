@@ -565,6 +565,7 @@ class PMBatchMail(object):
     def __init__(self, **kwargs):
         self.__api_key = None
         self.__messages = []
+        self.__template = False
 
         acceptable_keys = (
             'api_key',
@@ -606,6 +607,15 @@ class PMBatchMail(object):
         '''
     )
 
+    template = property(
+        lambda self: self.__template,
+        lambda self, value: setattr(self, '_PMBatchMail__template', value),
+        lambda self: setattr(self, '_PMBatchMail__template', None),
+        '''
+        Bool to check send with template
+        '''
+    )
+
     def add_message(self, message):
         '''
         Add a message to the batch
@@ -625,6 +635,10 @@ class PMBatchMail(object):
         type and are not missing.
         '''
         for message in self.__messages:
+            # Check list of messages to see if sending using templates
+            if not self.__template and (message.template_id or message.template_model):
+                self.__template = True
+
             message._check_values()
 
     def send(self, test=None):
@@ -648,9 +662,16 @@ class PMBatchMail(object):
             for message in messages:
                 json_message.append(message.to_json_message())
 
+            if not self.__template:
+                endpoint_url = __POSTMARK_URL__ + 'email/batch'
+                payload = json.dumps(json_message, cls=PMJSONEncoder).encode('utf8')
+            else:
+                endpoint_url = __POSTMARK_URL__ + 'email/batchWithTemplates'
+                payload = json.dumps({'Messages': json_message}, cls=PMJSONEncoder).encode('utf8')
+
             req = Request(
-                __POSTMARK_URL__ + 'email/batch',
-                json.dumps(json_message, cls=PMJSONEncoder).encode('utf8'),
+                endpoint_url,
+                payload,
                 {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
@@ -934,7 +955,7 @@ class PMBounceManager(object):
         # print req_url
         h1 = HTTPConnection('api.postmarkapp.com')
         dta = urlencode({"data": "blank"}).encode('utf8')
-        req = h1.request(
+        h1.request(
             'PUT',
             req_url,
             dta,
