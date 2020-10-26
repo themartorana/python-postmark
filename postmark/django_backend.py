@@ -53,6 +53,7 @@ class EmailBackend(BaseEmailBackend):
             raise ImproperlyConfigured('POSTMARK API key must be set in Django settings file or passed to backend constructor.')
         self.default_sender = getattr(settings, 'POSTMARK_SENDER', default_sender)
         self.test_mode = getattr(settings, 'POSTMARK_TEST_MODE', False)
+        self.return_message_id = getattr(settings, 'POSTMARK_RETURN_MESSAGE_ID', False)
 
     def send_messages(self, email_messages):
         """
@@ -147,7 +148,8 @@ class EmailBackend(BaseEmailBackend):
             to_send = PMBatchMail(messages=pm_messages)
         try:
             to_send.send(test=self.test_mode)
-            return str(to_send.message_id)
+            if self.return_message_id:
+                return str(to_send.message_id)
         except:
             if self.fail_silently:
                 return False
