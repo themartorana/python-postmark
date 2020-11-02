@@ -140,6 +140,11 @@ class PMMail(object):
         except ImportError:
             pass
 
+    @property
+    def messages(self):
+        """Convenience method to mimic batch messages property, return list of self."""
+        return [self]
+
     #
     # Properties
 
