@@ -5,8 +5,9 @@ from email.mime.image import MIMEImage
 
 from io import BytesIO
 
+from django.core import mail
 from django.core.mail import EmailMultiAlternatives, EmailMessage
-from django.test import override_settings, TestCase
+from django.test import TestCase
 
 from postmark.django_backend import EmailBackend
 
@@ -233,13 +234,10 @@ class PMBounceManagerTests(unittest.TestCase):
 
 class EmailBackendTests(TestCase):
 
-    def setUp(self):
-        self.backend = EmailBackend(api_key='dummy')
-
     def test_send_multi_alternative_html_email(self):
         # build a message and send it
         message = EmailMultiAlternatives(
-            connection=self.backend,
+            connection=EmailBackend(api_key='dummy'),
             from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='hello there'
         )
         message.attach_alternative('<b>hello</b> there', 'text/html')
@@ -253,7 +251,7 @@ class EmailBackendTests(TestCase):
     def test_send_content_subtype_email(self):
         # build a message and send it
         message = EmailMessage(
-            connection=self.backend,
+            connection=EmailBackend(api_key='dummy'),
             from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='<b>hello</b> there'
         )
         message.content_subtype = 'html'
@@ -271,7 +269,7 @@ class EmailBackendTests(TestCase):
         :return:
         """
         message = EmailMultiAlternatives(
-            connection=self.backend,
+            connection=EmailBackend(api_key='dummy'),
             from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='<b>hello</b> there'
         )
         # NO alternatives attached.  subtype specified instead
@@ -282,6 +280,129 @@ class EmailBackendTests(TestCase):
             data = json.loads(transport.call_args[0][0].data.decode('utf-8'))
             self.assertFalse('TextBody' in data)
             self.assertEqual('<b>hello</b> there', data['HtmlBody'])
+
+    def test_message_count_single(self):
+        """Test backend returns count sending single message."""
+        with self.settings(POSTMARK_RETURN_MESSAGE_ID=False):
+            message = EmailMessage(
+                connection=EmailBackend(api_key='dummy'),
+                from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='<b>hello</b> there'
+            )
+            
+            with mock.patch('postmark.core.urlopen') as transport:
+                transport.return_value.read.return_value.decode.return_value = """
+                    {
+                      "To": "recipient@test.com",
+                      "SubmittedAt": "2014-02-17T07:25:01.4178645-05:00",
+                      "MessageID": "0a129aee-e1cd-480d-b08d-4f48548ff48d",
+                      "ErrorCode": 0,
+                      "Message": "OK"
+                    }
+                    """
+                transport.return_value.code = 200
+                response = message.send()
+                self.assertEqual(response, 1)
+
+    def test_message_count_batch(self):
+        """Test backend returns count sending batch messages."""
+        with self.settings(POSTMARK_RETURN_MESSAGE_ID=False):
+
+            message1 = EmailMessage(
+                connection=EmailBackend(api_key='dummy'),
+                from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='<b>hello</b> there'
+            )
+            message2 = EmailMessage(
+                connection=EmailBackend(api_key='dummy'),
+                from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='<b>hello</b> there'
+            )
+
+            with mock.patch('postmark.core.urlopen') as transport:
+                transport.return_value.read.return_value.decode.return_value = """
+                    [
+                      {
+                        "ErrorCode": 0,
+                        "Message": "OK",
+                        "MessageID": "b7bc2f4a-e38e-4336-af7d-e6c392c2f817",
+                        "SubmittedAt": "2010-11-26T12:01:05.1794748-05:00",
+                        "To": "receiver1@example.com"
+                      },
+                      {
+                        "ErrorCode": 0,
+                        "Message": "OK",
+                        "MessageID": "e2ecbbfc-fe12-463d-b933-9fe22915106d",
+                        "SubmittedAt": "2010-11-26T12:01:05.1794748-05:00",
+                        "To": "receiver2@example.com"
+                      }
+                    ]
+                    """
+                transport.return_value.code = 200
+
+                # Directly send bulk mail via django
+                connection = mail.get_connection()
+                sent_messages = connection.send_messages([message1, message2])
+                self.assertEqual(sent_messages, 2)
+
+    def test_message_id_single(self):
+        """Test backend returns message sending single message with setting True"""
+        with self.settings(POSTMARK_RETURN_MESSAGE_ID=True):
+            message = EmailMessage(
+                connection=EmailBackend(api_key='dummy'),
+                from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='<b>hello</b> there'
+            )
+            
+            with mock.patch('postmark.core.urlopen') as transport:
+                transport.return_value.read.return_value.decode.return_value = """
+                    {
+                      "To": "recipient@test.com",
+                      "SubmittedAt": "2014-02-17T07:25:01.4178645-05:00",
+                      "MessageID": "0a129aee-e1cd-480d-b08d-4f48548ff48d",
+                      "ErrorCode": 0,
+                      "Message": "OK"
+                    }
+                    """
+                transport.return_value.code = 200
+                message_ids = message.send()
+                self.assertEqual(message_ids[0], "0a129aee-e1cd-480d-b08d-4f48548ff48d")
+
+    def test_message_id_batch(self):
+        """Test backend returns message sending batch messages with setting True"""
+        with self.settings(POSTMARK_RETURN_MESSAGE_ID=True):
+
+            message1 = EmailMessage(
+                connection=EmailBackend(api_key='dummy'),
+                from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='<b>hello</b> there'
+            )
+            message2 = EmailMessage(
+                connection=EmailBackend(api_key='dummy'),
+                from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='<b>hello</b> there'
+            )
+
+            with mock.patch('postmark.core.urlopen') as transport:
+                transport.return_value.read.return_value.decode.return_value = """
+                    [
+                      {
+                        "ErrorCode": 0,
+                        "Message": "OK",
+                        "MessageID": "b7bc2f4a-e38e-4336-af7d-e6c392c2f817",
+                        "SubmittedAt": "2010-11-26T12:01:05.1794748-05:00",
+                        "To": "receiver1@example.com"
+                      },
+                      {
+                        "ErrorCode": 0,
+                        "Message": "OK",
+                        "MessageID": "e2ecbbfc-fe12-463d-b933-9fe22915106d",
+                        "SubmittedAt": "2010-11-26T12:01:05.1794748-05:00",
+                        "To": "receiver2@example.com"
+                      }
+                    ]
+                    """
+                transport.return_value.code = 200
+
+                # Directly send bulk mail via django
+                connection = mail.get_connection()
+                sent_messages = connection.send_messages([message1, message2])
+                self.assertIn('b7bc2f4a-e38e-4336-af7d-e6c392c2f817', sent_messages)
+                self.assertIn('e2ecbbfc-fe12-463d-b933-9fe22915106d', sent_messages)
 
 
 if __name__ == '__main__':
@@ -296,6 +417,8 @@ if __name__ == '__main__':
             INSTALLED_APPS=[
             ],
             MIDDLEWARE_CLASSES=[],
+            EMAIL_BACKEND = 'postmark.django_backend.EmailBackend',
+            POSTMARK_API_KEY='dummy',
         )
 
     unittest.main()
