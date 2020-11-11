@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.5.5
+--------------
+- Setting to return message IDs in django backend (PR #89)
+
 Version 0.5.4
 --------------
 - Fix for sending batch emails with templates (PR #87)
