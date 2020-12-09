@@ -105,6 +105,8 @@ class EmailBackend(BaseEmailBackend):
                 for item in message.attachments:
                     if isinstance(item, tuple):
                         (f, content, m) = item
+                        if isinstance(content, str):
+                            content = content.encode()
                         content = base64.b64encode(content)
                         # b64decode returns bytes on Python 3. PMMail needs a
                         # str (for JSON serialization). Convert on Python 3
