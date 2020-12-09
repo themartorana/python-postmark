@@ -404,6 +404,19 @@ class EmailBackendTests(TestCase):
                 self.assertIn('b7bc2f4a-e38e-4336-af7d-e6c392c2f817', sent_messages)
                 self.assertIn('e2ecbbfc-fe12-463d-b933-9fe22915106d', sent_messages)
 
+    def test_send_attachment_bytes(self):
+        message = EmailMultiAlternatives(
+            connection=EmailBackend(api_key='dummy'),
+            from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='hello there'
+        )
+
+        f = StringIO(u'1,2,3')
+        message.attach('filename.csv', f.read(), 'text/csv')
+
+        with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)):
+            message.send()
+    
+
 
 if __name__ == '__main__':
     if not settings.configured:
