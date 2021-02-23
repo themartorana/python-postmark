@@ -75,6 +75,7 @@ class PMMail(object):
         metadata:       A dictionary of key-value pairs of custom metadata. Keys and values can only be strings or ints.
         template_id:    id of Postmark template. See: https://postmarkapp.com/blog/special-delivery-postmark-templates
         template_model: a dictionary containing the values to be loaded into the template
+        message_stream: Message stream ID that's used for sending. If not provided, message will default to the "outbound" transactional stream.
         '''
         # initialize properties
         self.__api_key = None
@@ -95,6 +96,7 @@ class PMMail(object):
         self.__metadata = {}
         self.__template_id = None
         self.__template_model = None
+        self.__message_stream = None
 
         acceptable_keys = (
             'api_key',
@@ -113,7 +115,8 @@ class PMMail(object):
             # 'multipart',
             'metadata',
             'template_id',
-            'template_model'
+            'template_model',
+            'message_stream'
         )
 
         for key in kwargs:
@@ -343,6 +346,12 @@ class PMMail(object):
         lambda self: setattr(self, '_PMMail__template_model', {}),
     )
 
+    message_stream = property(
+        lambda self: self.__message_stream,
+        lambda self, value: setattr(self, '_PMMail__message_stream', value),
+        lambda self: setattr(self, '_PMMail__message_stream', None),
+    )
+
     message_id = property(
         lambda self: self.__message_id,
         lambda self, value: setattr(self, '_PMMail__message_id', value),
@@ -471,6 +480,9 @@ class PMMail(object):
                     continue
                 attachments.append(file_item)
             json_message['Attachments'] = attachments
+
+        if self.__message_stream:
+            json_message['MessageStream'] = self.__message_stream
 
         return json_message
 
