@@ -27,5 +27,6 @@ Everyone that made python-postmark awesome
 - Nicholas Serra (https://github.com/nicholasserra)
 - Nikolay Fominykh (https://github.com/tigrus)
 - Gabe Limon (https://github.com/gabelimon)
+- Olle Hellgren (https://github.com/anulaibar)
 
 (Did I miss anyone?)
