@@ -1,6 +1,11 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.5.6
+--------------
+- Encoding issues (PR #91)
+- Add message_stream attribute to PMMail (PR #94)
+
 Version 0.5.5
 --------------
 - Setting to return message IDs in django backend (PR #89)
