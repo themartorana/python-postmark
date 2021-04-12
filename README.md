@@ -51,6 +51,23 @@ EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
 ```
 
 But keep in mind that even when using standard Django functions the sender must be registered with postmarkapp.com.
+
+**Note on Tags**
+One tag can be set via Django Mail system by setting both the `X-PM-Tag` header, and setting the variable `tag` on the EmailMessage object.
+
+e.g. using `EmailMultiAlternatives` from `django.core.mail`
+
+```python
+from django.core.mail import get_connection, EmailMultiAlternatives
+
+tag = "my-tag"
+headers = { 'X-PM-Tag': tag }
+
+mail = EmailMultiAlternatives(subject, msg_plain, from_email, recipients, connection=connection, headers=headers)
+
+mail.tag = tag
+mail.send()
+```
     
 Tornado
 -------
