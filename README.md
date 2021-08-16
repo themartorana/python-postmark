@@ -68,6 +68,17 @@ mail = EmailMultiAlternatives(subject, msg_plain, from_email, recipients, connec
 mail.tag = tag
 mail.send()
 ```
+
+#### Setting the `message_stream`
+```python
+from django.core.mail import get_connection, EmailMultiAlternatives
+
+mail = EmailMultiAlternatives(subject, msg_plain, from_email, recipients, connection=connection, headers=headers)
+
+mail.message_stream = "broadcast"
+mail.send()
+```
+
     
 Tornado
 -------
