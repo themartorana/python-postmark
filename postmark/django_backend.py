@@ -23,6 +23,7 @@ class PMEmailMessage(EmailMessage):
 
         if 'message_stream' in kwargs:
             self.message_stream = kwargs['message_stream']
+            del kwargs['message_stream']
         else:
             self.message_stream = None
 
@@ -45,6 +46,7 @@ class PMEmailMultiAlternatives(EmailMultiAlternatives):
 
         if 'message_stream' in kwargs:
             self.message_stream = kwargs['message_stream']
+            del kwargs['message_stream']
         else:
             self.message_stream = None
 
@@ -128,7 +130,7 @@ class EmailBackend(BaseEmailBackend):
                     else:
                         attachments.append(item)
 
-        message_stream = getattr(message, "message_stream", None)
+        message_stream = getattr(message, 'message_stream', None)
         postmark_message = PMMail(api_key=self.api_key,
                                   subject=message.subject,
                                   sender=message.from_email,

@@ -416,6 +416,21 @@ class EmailBackendTests(TestCase):
         with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)):
             message.send()
     
+    def test_message_stream(self):
+        message = EmailMultiAlternatives(
+            connection=EmailBackend(api_key='dummy'),
+            from_email='from@test.com', to=['recipient@test.com'], subject='html test', body='hello there'
+        )
+        message.attach_alternative('<b>hello</b> there', 'text/html')
+        message.message_stream = 'broadcast'
+
+        with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)) as transport:
+            message.send()
+            data = json.loads(transport.call_args[0][0].data.decode('utf-8'))
+            self.assertEqual('broadcast', data['MessageStream'])
+            self.assertEqual('hello there', data['TextBody'])
+            self.assertEqual('<b>hello</b> there', data['HtmlBody'])
+
 
 
 if __name__ == '__main__':
