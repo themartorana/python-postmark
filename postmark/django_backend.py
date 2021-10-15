@@ -21,6 +21,12 @@ class PMEmailMessage(EmailMessage):
         else:
             self.track_opens = getattr(settings, 'POSTMARK_TRACK_OPENS', False)
 
+        if 'message_stream' in kwargs:
+            self.message_stream = kwargs['message_stream']
+            del kwargs['message_stream']
+        else:
+            self.message_stream = None
+
         super(PMEmailMessage, self).__init__(*args, **kwargs)
 
 
@@ -37,6 +43,13 @@ class PMEmailMultiAlternatives(EmailMultiAlternatives):
             del kwargs['track_opens']
         else:
             self.track_opens = getattr(settings, 'POSTMARK_TRACK_OPENS', False)
+
+        if 'message_stream' in kwargs:
+            self.message_stream = kwargs['message_stream']
+            del kwargs['message_stream']
+        else:
+            self.message_stream = None
+
 
         super(PMEmailMultiAlternatives, self).__init__(*args, **kwargs)
 
@@ -117,6 +130,7 @@ class EmailBackend(BaseEmailBackend):
                     else:
                         attachments.append(item)
 
+        message_stream = getattr(message, 'message_stream', None)
         postmark_message = PMMail(api_key=self.api_key,
                                   subject=message.subject,
                                   sender=message.from_email,
@@ -127,7 +141,8 @@ class EmailBackend(BaseEmailBackend):
                                   html_body=html_body,
                                   reply_to=reply_to,
                                   custom_headers=custom_headers,
-                                  attachments=attachments)
+                                  attachments=attachments,
+                                  message_stream=message_stream)
 
         postmark_message.tag = getattr(message, 'tag', None)
         postmark_message.track_opens = getattr(message, 'track_opens', False)

@@ -28,5 +28,6 @@ Everyone that made python-postmark awesome
 - Nikolay Fominykh (https://github.com/tigrus)
 - Gabe Limon (https://github.com/gabelimon)
 - Olle Hellgren (https://github.com/anulaibar)
+- Harry Khanna (https://www.khanna.law/)
 
 (Did I miss anyone?)
