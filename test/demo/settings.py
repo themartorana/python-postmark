@@ -53,10 +53,10 @@ TEMPLATES = [
 EMAIL_BACKEND = 'postmark.django_backend.EmailBackend'
 
 #Supply your own API KEY
-POSTMARK_API_KEY = ''
+POSTMARK_API_KEY = os.environ.get('POSTMARK_API_KEY', '')
 assert len(POSTMARK_API_KEY) != 0
 
 #Use the sender set up in your postmark account
-POSTMARK_SENDER = ''
+POSTMARK_SENDER = os.environ.get('POSTMARK_SENDER', '')
 assert len(POSTMARK_SENDER) != 0
 
