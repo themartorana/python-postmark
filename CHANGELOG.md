@@ -1,6 +1,10 @@
 CHANGELOG for python-postmark
 ===============================
 
+Version 0.5.7
+--------------
+- Allow django_backend to take advantage of message_streams (PR #103)
+
 Version 0.5.6
 --------------
 - Encoding issues (PR #91)
