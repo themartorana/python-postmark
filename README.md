@@ -1,4 +1,4 @@
-![workflow status](https://github.com/themartorana/python-postmark/actions/workflows/python.yml/badge.svg)
+![workflow status](https://github.com/themartorana/python-postmark/actions/workflows/python.yaml/badge.svg)
 [![PyPI](https://img.shields.io/pypi/v/python-postmark.svg)](https://pypi.python.org/pypi/python-postmark)
 [![PyPI](https://img.shields.io/pypi/dm/python-postmark.svg)](https://pypi.python.org/pypi/python-postmark)
 
