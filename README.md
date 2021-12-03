@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/themartorana/python-postmark.svg?branch=master)](https://travis-ci.org/themartorana/python-postmark)
+![workflow status](https://github.com/themartorana/python-postmark/actions/workflows/python.yml/badge.svg)
 [![PyPI](https://img.shields.io/pypi/v/python-postmark.svg)](https://pypi.python.org/pypi/python-postmark)
 [![PyPI](https://img.shields.io/pypi/dm/python-postmark.svg)](https://pypi.python.org/pypi/python-postmark)
 
