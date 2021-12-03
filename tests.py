@@ -227,9 +227,10 @@ class PMBounceManagerTests(unittest.TestCase):
     def test_activate(self):
         bounce = PMBounceManager(api_key='test')
 
-        with mock.patch('postmark.core.HTTPConnection.getresponse') as mock_response:
-            mock_response.return_value = StringIO('{"test": "test"}')
-            self.assertEqual(bounce.activate(1), {'test': 'test'})
+        with mock.patch('postmark.core.HTTPConnection.request') as mock_request:
+            with mock.patch('postmark.core.HTTPConnection.getresponse') as mock_response:
+                mock_response.return_value = StringIO('{"test": "test"}')
+                self.assertEqual(bounce.activate(1), {'test': 'test'})
 
 
 class EmailBackendTests(TestCase):
