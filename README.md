@@ -5,7 +5,7 @@
 python-postmark library for [Postmark](http://postmarkapp.com)
 ================================================================
 
-Supports Python 2.7 and greater, including 3.x.
+Current version supports Python >= 3.5.
 
 Includes:
 
