@@ -156,14 +156,14 @@ class EmailBackend(BaseEmailBackend):
             if to_send is False:
                 # The message was missing recipients.
                 # Bail.
-                return False
+                return False, None
         else:
             pm_messages = list(map(self._build_message, messages))
             pm_messages = [m for m in pm_messages if m]
             if len(pm_messages) == 0:
                 # If after filtering, there aren't any messages
                 # to send, bail.
-                return False
+                return False, None
             to_send = PMBatchMail(messages=pm_messages)
         try:
             to_send.send(test=self.test_mode)

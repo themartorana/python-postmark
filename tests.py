@@ -343,6 +343,39 @@ class EmailBackendTests(TestCase):
                 sent_messages = connection.send_messages([message1, message2])
                 self.assertEqual(sent_messages, 2)
 
+    def test_send_messages_nothing_to_send_single(self):
+        """Make sure no errors when send results in zero messages."""
+        with self.settings(POSTMARK_RETURN_MESSAGE_ID=False):
+            message1 = EmailMessage(
+                connection=EmailBackend(api_key='dummy'),
+                from_email='from@test.com', to=[], subject='html test', body='<b>hello</b> there'
+            )
+
+            with mock.patch('postmark.core.urlopen') as transport:
+                # Directly send bulk mail via django
+                connection = mail.get_connection()
+                sent_messages = connection.send_messages([message1])
+                self.assertEqual(0, sent_messages)
+
+    def test_send_messages_nothing_to_send_double(self):
+        """Make sure no errors when send results in zero messages."""
+        with self.settings(POSTMARK_RETURN_MESSAGE_ID=False):
+            message1 = EmailMessage(
+                connection=EmailBackend(api_key='dummy'),
+                from_email='from@test.com', to=[], subject='html test', body='<b>hello</b> there'
+            )
+
+            message2 = EmailMessage(
+                connection=EmailBackend(api_key='dummy'),
+                from_email='from@test.com', to=[], subject='html test', body='<b>hello</b> there'
+            )
+
+            with mock.patch('postmark.core.urlopen') as transport:
+                # Directly send bulk mail via django
+                connection = mail.get_connection()
+                sent_messages = connection.send_messages([message1, message2])
+                self.assertEqual(0, sent_messages)
+
     def test_message_id_single(self):
         """Test backend returns message sending single message with setting True"""
         with self.settings(POSTMARK_RETURN_MESSAGE_ID=True):
@@ -416,7 +449,7 @@ class EmailBackendTests(TestCase):
 
         with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)):
             message.send()
-    
+
     def test_message_stream(self):
         message = EmailMultiAlternatives(
             connection=EmailBackend(api_key='dummy'),
