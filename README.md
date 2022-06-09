@@ -22,6 +22,13 @@ Changelog
 ----------
 *[See full changelog](https://github.com/themartorana/python-postmark/blob/master/CHANGELOG.md)*
 
+Install
+-------
+
+```
+pip install python-postmark
+```
+
 Usage
 -----
 Make sure you have a Postmark account.  Visit http://postmarkapp.com to sign up for an account. Requires a Postmark API key.
