@@ -123,7 +123,7 @@ class PMMailTests(unittest.TestCase):
             client.send, 'Cannot send a template e-mail without both a template_alias and template_model set'
         )
 
-    def test_check_values_bad_template_alias_data(self):
+    def test_check_values_bad_template_model_data(self):
         client = PMMail(api_key='test', sender='from@example.com', to='to@example.com', template_model={'junk': 'more junk'})
         self.assert_missing_value_exception(
             client.send, 'Cannot send a template e-mail without either a template_id or template_alias set'
