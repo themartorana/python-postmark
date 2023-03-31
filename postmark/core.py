@@ -407,7 +407,10 @@ class PMMail(object):
                 'Cannot send a template e-mail without a both template_id and template_model set')
         elif self.__template_alias and not all([self.__template_alias, self.__template_model]):
             raise PMMailMissingValueException(
-                'Cannot send a alias e-mail without both a template_alias and template_model set')
+                'Cannot send a template e-mail without both a template_alias and template_model set')
+        elif self.__template_model and not any([self.__template_id, self.__template_alias]):
+            raise PMMailMissingValueException(
+                'Cannot send a template e-mail without either a template_id or template_alias set')
         elif not any([self.__template_id, self.__template_alias, self.__template_model, self.__subject]):
             raise PMMailMissingValueException('Cannot send an e-mail without a subject')
         elif not self.__html_body and not self.__text_body and not (self.__template_id or self.__template_alias):
