@@ -74,6 +74,7 @@ class PMMail(object):
         attachments:    A list of tuples or email.mime.base.MIMEBase objects describing attachments.
         metadata:       A dictionary of key-value pairs of custom metadata. Keys and values can only be strings or ints.
         template_id:    id of Postmark template. See: https://postmarkapp.com/blog/special-delivery-postmark-templates
+        template_alias: alias of a Postmark template. See: https://postmarkapp.com/support/article/1117-how-do-i-use-a-template-alias
         template_model: a dictionary containing the values to be loaded into the template
         message_stream: Message stream ID that's used for sending. If not provided, message will default to the "outbound" transactional stream.
         '''
@@ -95,6 +96,7 @@ class PMMail(object):
         # self.__multipart = False
         self.__metadata = {}
         self.__template_id = None
+        self.__template_alias = None
         self.__template_model = None
         self.__message_stream = None
 
@@ -115,6 +117,7 @@ class PMMail(object):
             # 'multipart',
             'metadata',
             'template_id',
+            'template_alias',
             'template_model',
             'message_stream'
         )
@@ -340,6 +343,12 @@ class PMMail(object):
         lambda self: setattr(self, '_PMMail__template_id', {}),
     )
 
+    template_alias = property(
+        lambda self: self.__template_alias,
+        lambda self, value: setattr(self, '_PMMail__template_alias', value),
+        lambda self: setattr(self, '_PMMail__template_alias', None),
+    )
+
     template_model = property(
         lambda self: self.__template_model,
         lambda self, value: setattr(self, '_PMMail__template_model', value),
@@ -393,12 +402,15 @@ class PMMail(object):
             raise PMMailMissingValueException('Cannot send an e-mail without a sender (.sender field)')
         elif not self.__to and not self.__bcc:
             raise PMMailMissingValueException('Cannot send an e-mail without at least one recipient (.to field or .bcc field)')
-        elif (self.__template_id or self.__template_model) and not all([self.__template_id, self.__template_model]):
+        elif self.__template_id and not all([self.__template_id, self.__template_model]):
             raise PMMailMissingValueException(
                 'Cannot send a template e-mail without a both template_id and template_model set')
-        elif not any([self.__template_id, self.__template_model, self.__subject]):
+        elif self.__template_alias and not all([self.__template_alias, self.__template_model]):
+            raise PMMailMissingValueException(
+                'Cannot send a alias e-mail without both a template_alias and template_model set')
+        elif not any([self.__template_id, self.__template_alias, self.__template_model, self.__subject]):
             raise PMMailMissingValueException('Cannot send an e-mail without a subject')
-        elif not self.__html_body and not self.__text_body and not self.__template_id:
+        elif not self.__html_body and not self.__text_body and not (self.__template_id or self.__template_alias):
             raise PMMailMissingValueException('Cannot send an e-mail without either an HTML or text version of your e-mail body')
         if self.__track_opens and not self.__html_body:
             print('WARNING: .track_opens set to True with no .html_body set. Tracking opens will not work; message will still send.')
@@ -430,6 +442,9 @@ class PMMail(object):
 
         if self.__template_id:
             json_message['TemplateId'] = self.__template_id
+
+        if self.__template_alias:
+            json_message['TemplateAlias'] = self.__template_alias
 
         if self.__template_model:
             json_message['TemplateModel'] = self.__template_model
@@ -514,7 +529,7 @@ class PMMail(object):
             print('JSON message is:\n%s' % json.dumps(json_message, cls=PMJSONEncoder))
             return
 
-        if self.__template_id:
+        if self.__template_id or self.__template_alias:
             endpoint_url = __POSTMARK_URL__ + 'email/withTemplate/'
         else:
             endpoint_url = __POSTMARK_URL__ + 'email'

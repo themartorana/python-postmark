@@ -117,6 +117,23 @@ class PMMailTests(unittest.TestCase):
             200, '', {}, None)):
             message.send()
 
+    def test_check_values_bad_alias_data(self):
+        client = PMMail(api_key='test', sender='from@example.com', to='to@example.com', template_alias='my-template-alias')
+        self.assert_missing_value_exception(
+            client.send, 'Cannot send a alias e-mail without both a template_alias and template_model set'
+        )
+
+    def test_send_with_alias(self):
+        message = PMMail(
+            api_key='test',
+            sender='from@example.com',
+            to='to@example.com',
+            template_alias='my-template-alias',
+            template_model={'junk': 'more junk'},
+        )
+        with mock.patch('postmark.core.urlopen', side_effect=HTTPError('', 200, '', {}, None)):
+            message.send()
+
     def test_inline_attachments(self):
         image = MIMEImage(b'image_file', 'png', name='image.png')
         image_with_id = MIMEImage(b'inline_image_file', 'png', name='image_with_id.png')

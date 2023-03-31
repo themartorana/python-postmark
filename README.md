@@ -124,7 +124,8 @@ Using templates in python-postmark is straightforward:
 
 3. Make a dict in python that contains the values of the template variables. Postmark calls this the "TemplateModel"
 
-4. Instantiate PMMail with the the appropriate kwargs, including "template_id" and "template_model". NOTE: "subject" kwarg is ignored.
+4. Instantiate PMMail with the appropriate kwargs, including "template_id" and "template_model". NOTE: "subject" kwarg is ignored.
+   - "template_id" can be substituted for "template_alias" if you wish to send using Postmark's template alias feature.
 
 5. Call the send() method
 
