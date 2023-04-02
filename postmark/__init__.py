@@ -1,8 +1,8 @@
-__version__ = '0.5.8'
+__version__ = '0.6.0'
 __author__ = "Dave Martorana (http://davemartorana.com), Richard Cooper (http://frozenskys.com), Bill Jones (oraclebill), Dmitry Golomidov (deeGraYve)"
 __date__ = '2010-April-14'
 __url__ = 'http://postmarkapp.com'
-__copyright__ = "(C) 2009-2021 David Martorana, Wildbit LLC, Python Software Foundation."
+__copyright__ = "(C) 2009-2023 David Martorana, Wildbit LLC, Python Software Foundation."
 __doc__ = '''
 
     PMMail object for Postmark (http://postmarkapp.com)
