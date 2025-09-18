@@ -556,8 +556,9 @@ class PMMail(object):
             jsontxt = result.read().decode('utf8')
             result.close()
             if result.code == 200:
-                self.message_id = json.loads(jsontxt).get('MessageID', None)
-                return True
+                parsed = json.loads(jsontxt)
+                self.message_id = parsed.get("MessageID", None)
+                return parsed
             else:
                 raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
         except HTTPError as err:
@@ -729,6 +730,7 @@ class PMBatchMail(object):
                     results = json.loads(jsontxt)
                     for i, res in enumerate(results):
                         self.__messages[i].message_id = res.get("MessageID", None)
+                    return results
                 else:
                     raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
             except HTTPError as err:
