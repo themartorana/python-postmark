@@ -20,8 +20,7 @@ else:
 
 import mock
 
-import django
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 
 from postmark import (
     PMBatchMail, PMMail, PMMailInactiveRecipientException,
@@ -32,14 +31,6 @@ from postmark import (
 from django.conf import settings
 
 
-if not settings.configured:
-    settings.configure(
-        POSTMARK_TRACK_OPENS=False,
-        POSTMARK_API_KEY="dummy",
-        POSTMARK_SENDER="test@example.com",
-    )
-    django.setup()
-
 def make_fake_response(payload, code=200):
     """Helper to fake an HTTP response object."""
     mock = MagicMock()
@@ -47,62 +38,6 @@ def make_fake_response(payload, code=200):
     mock.read.return_value = json.dumps(payload).encode("utf-8")
     mock.close.return_value = None
     return mock
-
-@patch("postmark.core.urlopen")
-def test_mail_returns_result(mock_urlopen):
-    # Fake Postmark single send response
-    fake_payload = {
-        "To": "receiver@example.com",
-        "SubmittedAt": "2025-09-18T10:00:00Z",
-        "MessageID": "abc-123",
-        "ErrorCode": 0,
-        "Message": "OK"
-    }
-    mock_urlopen.return_value = make_fake_response(fake_payload)
-
-    mail = PMMail(
-        api_key="test-api-key",
-        sender="sender@example.com",
-        to="receiver@example.com",
-        subject="Hello",
-        text_body="Testing single mail return",
-    )
-    result = mail.send()
-
-    assert isinstance(result, dict)
-    assert result["ErrorCode"] == 0
-    assert result["Message"] == "OK"
-
-
-@patch("postmark.core.urlopen")
-def test_batch_mail_returns_results(mock_urlopen):
-    # Fake batch response
-    fake_payload = [
-        {
-            "To": "receiver@example.com",
-            "SubmittedAt": "2025-09-18T10:00:00Z",
-            "MessageID": "abc-123",
-            "ErrorCode": 0,
-            "Message": "OK",
-        }
-    ]
-    mock_urlopen.return_value = make_fake_response(fake_payload)
-
-    # Build PMMail objects
-    message = PMMail(
-        api_key="test-api-key",
-        sender="sender@example.com",
-        to="receiver@example.com",
-        subject="Hello",
-        text_body="Testing batch return",
-    )
-
-    # Pass list of PMMail objects to PMBatchMail
-    batch = PMBatchMail(api_key="test-api-key", messages=[message])
-    results = batch.send()
-
-    assert isinstance(results, list)
-    assert results[0]["ErrorCode"] == 0
 
 
 class PMMailTests(unittest.TestCase):
@@ -257,6 +192,37 @@ class PMMailTests(unittest.TestCase):
         self.assertRaises(TypeError, PMMail, api_key='test', sender='from@example.com', to='to@example.com',
                          subject='test', text_body='test', metadata={'test': {}})
 
+    def test_mail_returns_result(self):
+        fake_payload = {
+            "To": "receiver@example.com",
+            "SubmittedAt": "2025-09-18T10:00:00Z",
+            "MessageID": "abc-123",
+            "ErrorCode": 0,
+            "Message": "OK"
+        }
+
+        mail = PMMail(
+            api_key="test-api-key",
+            sender="sender@example.com",
+            to="receiver@example.com",
+            subject="Hello",
+            text_body="Testing single mail return",
+        )
+
+        with mock.patch("postmark.core.urlopen") as mock_urlopen:
+            mock_urlopen.return_value = make_fake_response(fake_payload)
+
+            # Test boolean return
+            result = mail.send()
+            self.assertTrue(result)
+
+            # Test JSON return explicitly
+            result_json = mail.send(return_json=True)
+            self.assertIsInstance(result_json, dict)
+            self.assertEqual(result_json["ErrorCode"], 0)
+            self.assertEqual(result_json["Message"], "OK")
+
+
 
 class PMBatchMailTests(unittest.TestCase):
     def test_406_error_inactive_recipient(self):
@@ -320,6 +286,40 @@ class PMBatchMailTests(unittest.TestCase):
         with mock.patch('postmark.core.urlopen', side_effect=HTTPError('',
             500, '', {}, None)):
             self.assertRaises(PMMailServerErrorException, batch.send)
+
+    def test_batch_mail_returns_results(self):
+        fake_payload = [
+            {
+                "To": "receiver@example.com",
+                "SubmittedAt": "2025-09-18T10:00:00Z",
+                "MessageID": "abc-123",
+                "ErrorCode": 0,
+                "Message": "OK",
+            }
+        ]
+
+        message = PMMail(
+            api_key="test-api-key",
+            sender="sender@example.com",
+            to="receiver@example.com",
+            subject="Hello",
+            text_body="Testing batch return",
+        )
+        # pass list of PMMail objects to PMBatchMail
+        batch = PMBatchMail(api_key="test-api-key", messages=[message])
+
+        with mock.patch("postmark.core.urlopen") as mock_urlopen:
+            mock_urlopen.return_value = make_fake_response(fake_payload)
+
+            # Test boolean return
+            results = batch.send()
+            self.assertTrue(results)
+
+            # Test JSON return explicitly
+            results_json = batch.send(return_json=True)
+            self.assertIsInstance(results_json, list)
+            self.assertEqual(results_json[0]["ErrorCode"], 0)
+
 
 
 class PMBounceManagerTests(unittest.TestCase):
