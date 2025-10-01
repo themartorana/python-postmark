@@ -504,7 +504,7 @@ class PMMail(object):
 
         return json_message
 
-    def send(self, test=None):
+    def send(self, test=None, return_json=None):
         '''
         Send the email through the Postmark system.
         Pass test=True to just print out the resulting
@@ -537,6 +537,21 @@ class PMMail(object):
         else:
             endpoint_url = __POSTMARK_URL__ + 'email'
 
+        """
+        Args:
+            return_json (bool | None):
+                True  -> return parsed JSON
+                False -> return True/False
+                None  -> fallback to settings.POSTMARK_RETURN_JSON (default False)
+        """
+
+        if return_json is None:
+            try:
+                from django.conf import settings as django_settings
+                return_json = getattr(django_settings, "POSTMARK_RETURN_JSON", False)
+            except ImportError:
+                return_json = False
+
         # Set up the url Request
         req = Request(
             endpoint_url,
@@ -556,8 +571,9 @@ class PMMail(object):
             jsontxt = result.read().decode('utf8')
             result.close()
             if result.code == 200:
-                self.message_id = json.loads(jsontxt).get('MessageID', None)
-                return True
+                parsed = json.loads(jsontxt)
+                self.message_id = parsed.get("MessageID", None)
+                return parsed if return_json else True
             else:
                 raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
         except HTTPError as err:
@@ -676,7 +692,7 @@ class PMBatchMail(object):
 
             message._check_values()
 
-    def send(self, test=None):
+    def send(self, test=None, return_json=None):
         # Has one of the messages caused an inactive recipient error?
         inactive_recipient = False
 
@@ -690,6 +706,21 @@ class PMBatchMail(object):
                 test = getattr(django_settings, "POSTMARK_TEST_MODE", None)
             except ImportError:
                 pass
+
+        """
+        Args:
+            return_json (bool | None):
+                True  -> return parsed JSON
+                False -> return True/False
+                None  -> fallback to settings.POSTMARK_RETURN_JSON (default False)
+        """
+
+        if return_json is None:
+            try:
+                from django.conf import settings as django_settings
+                return_json = getattr(django_settings, "POSTMARK_RETURN_JSON", False)
+            except ImportError:
+                return_json = False
 
         # Split up into groups of 500 messages for sending
         for messages in _chunks(self.messages, PMBatchMail.MAX_MESSAGES):
@@ -729,6 +760,7 @@ class PMBatchMail(object):
                     results = json.loads(jsontxt)
                     for i, res in enumerate(results):
                         self.__messages[i].message_id = res.get("MessageID", None)
+                    return results if return_json else True
                 else:
                     raise PMMailSendException('Return code %d: %s' % (result.code, result.msg))
             except HTTPError as err:
